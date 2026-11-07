@@ -10,7 +10,14 @@ use common::TestDir;
 
 fn invoke(dir: &TestDir, catalog: Option<&Path>, args: &[&str]) -> Output {
     let config_dir = dir.path().join("config");
-    let mut command = Command::new(env!("CARGO_BIN_EXE_orion"));
+    let bin = std::env::var("CARGO_BIN_EXE_NEXT_HARNESS")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
+            let bin_name = if cfg!(windows) { "next-harness.exe" } else { "next-harness" };
+            Path::new(&manifest_dir).join("target/debug").join(bin_name)
+        });
+    let mut command = Command::new(bin);
 
     // English unless the test asks for something else: the assertions below
     // must not depend on the language of the machine running them.

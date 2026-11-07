@@ -1,8 +1,8 @@
 mod common;
 
 use common::{write_script, TestDir};
-use orion_relay::config::Config;
-use orion_relay::detector::{Detector, Platform, Status};
+use next_harness::config::Config;
+use next_harness::detector::{Detector, Platform, Status};
 
 fn catalog(body: &str) -> Config {
     Config::parse(body, None, "test").expect("test catalog loads")

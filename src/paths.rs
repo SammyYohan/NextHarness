@@ -63,7 +63,7 @@ pub fn config_dir() -> Result<PathBuf> {
     if let Some(dir) = std::env::var_os("ORION_CONFIG_DIR") {
         return Ok(PathBuf::from(dir));
     }
-    directories::ProjectDirs::from("", "", "orion-relay")
+    directories::ProjectDirs::from("", "", "next-harness")
         .map(|dirs| dirs.config_dir().to_path_buf())
         .ok_or_else(|| Error::msg("cannot determine a configuration directory for this platform"))
 }

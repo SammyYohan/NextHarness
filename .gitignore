@@ -1,3 +1,20 @@
+# Compiled binaries
 /target
+
+# Orion/NextHarness data directories (per-repo and per-user)
 .orion/
+.nextharness/
+
+# Temporary files
 *.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

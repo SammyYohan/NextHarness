@@ -780,6 +780,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "next-harness"
+version = "0.1.0-beta.1"
+dependencies = [
+ "arboard",
+ "clap",
+ "crossterm",
+ "directories",
+ "native-dialog",
+ "portable-pty",
+ "regex",
+ "rust-i18n",
+ "serde",
+ "serde_json",
+ "sys-locale",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.2.1+spec-1.1.0",
+ "which 8.0.6",
+]
+
+[[package]]
 name = "nix"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -910,27 +931,6 @@ name = "option-ext"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
-
-[[package]]
-name = "orion-relay"
-version = "0.1.0-beta.1"
-dependencies = [
- "arboard",
- "clap",
- "crossterm",
- "directories",
- "native-dialog",
- "portable-pty",
- "regex",
- "rust-i18n",
- "serde",
- "serde_json",
- "sys-locale",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.2.1+spec-1.1.0",
- "which 8.0.6",
-]
 
 [[package]]
 name = "parking_lot"

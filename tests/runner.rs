@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use common::TestDir;
-use orion_relay::runner::{run, Params};
+use next_harness::runner::{run, Params};
 
 fn fake_harness() -> PathBuf {
     PathBuf::from(env!("CARGO_BIN_EXE_fake-harness"))

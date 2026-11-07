@@ -1,11 +1,11 @@
 <div align="center">
 
-# Orion Relay
+# NextHarness
 
 **One coding task. Every AI coding harness you already have. No quota wasted.**
 
-[![CI](https://github.com/<OWNER>/orion-relay/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/orion-relay/actions/workflows/ci.yml)
-[![release](https://img.shields.io/github/v/release/<OWNER>/orion-relay?include_prereleases)](https://github.com/<OWNER>/orion-relay/releases)
+[![CI](https://github.com/<OWNER>/next-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/next-harness/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/<OWNER>/next-harness?include_prereleases)](https://github.com/<OWNER>/next-harness/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
 
@@ -42,14 +42,14 @@ pretends to be one of the tools it drives.
 - [Configuration](#configuration)
 - [Compatibility](#compatibility)
 - [Honest limits](#honest-limits)
-- [What Orion does not do](#what-orion-does-not-do)
+- [What Orion does not do](#what-next-harness-does-not-do)
 - [Contributing](#contributing)
 - [Support](#support)
 
 ### How it works
 
 ```text
-  you ── orion run "add a dark mode" ──▶ .orion/TASK.md
+  you ── next-harness run "add a dark mode" ──▶ .next-harness/TASK.md
                                               │
                         catalog order         ▼
               ┌──────────────────▶ harness #1 (free) ──▶ finished ──▶ done
@@ -57,7 +57,7 @@ pretends to be one of the tools it drives.
               │                       │ out of quota
               │                       ▼
               │            state.json: pause #1 until reset (atomic write)
-              │            .orion/HANDOFF.md: task, git status, diff --stat,
+              │            .next-harness/HANDOFF.md: task, git status, diff --stat,
               │                              end of output, "do not redo"
               │                       │
               └───────────────────────┘  next harness gets HANDOFF.md
@@ -73,13 +73,13 @@ traffic is the one your harness already makes.
 ### Install
 
 **Prebuilt binary** — download the archive for your platform from
-[Releases](https://github.com/<OWNER>/orion-relay/releases), verify the
-`.sha256` next to it, and put `orion` on your `PATH`.
+[Releases](https://github.com/<OWNER>/next-harness-relay/releases), verify the
+`.sha256` next to it, and put `next-harness` on your `PATH`.
 
 **From source** — you need Rust 1.85 or newer:
 
 ```sh
-cargo install --git https://github.com/<OWNER>/orion-relay --bin orion
+cargo install --git https://github.com/<OWNER>/next-harness-relay --bin next-harness
 ```
 
 On Linux the build needs the GTK and XDo headers, because the pay prompt is a
@@ -93,19 +93,19 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 
 ```sh
 cd ~/code/my-project
-orion init                          # detect what is installed, write defaults
-orion doctor                        # see the relay order and what is missing
-orion run "add a dark mode and tests"
+next-harness init                          # detect what is installed, write defaults
+next-harness doctor                        # see the relay order and what is missing
+next-harness run "add a dark mode and tests"
 ```
 
 That is the whole loop. If the first harness runs out of quota, Orion pauses it,
-writes `.orion/HANDOFF.md`, and starts the next one. When everything is
+writes `.next-harness/HANDOFF.md`, and starts the next one. When everything is
 exhausted it asks: pay, wait for the reset, or stop.
 
 Every run leaves its trail in the repository:
 
 ```text
-.orion/
+.next-harness/
 ├── TASK.md      the task, written once
 ├── HANDOFF.md   rewritten before each switch
 └── runs/        per-attempt transcripts (ANSI stripped, secrets masked)
@@ -115,12 +115,12 @@ Every run leaves its trail in the repository:
 
 | Command | What it does |
 | --- | --- |
-| `orion init` | Detect installed harnesses, print the relay order, write `config.json` |
-| `orion run "<task>"` | Run a task, relaying on quota |
-| `orion resume` | Continue the task already in `.orion/TASK.md` |
-| `orion status` | Which harnesses are paused, and until when |
-| `orion doctor [--refresh] [--report]` | Inventory; `--report` prints pasteable Markdown |
-| `orion config` | Where the configuration and state live |
+| `next-harness init` | Detect installed harnesses, print the relay order, write `config.json` |
+| `next-harness run "<task>"` | Run a task, relaying on quota |
+| `next-harness resume` | Continue the task already in `.next-harness/TASK.md` |
+| `next-harness status` | Which harnesses are paused, and until when |
+| `next-harness doctor [--refresh] [--report]` | Inventory; `--report` prints pasteable Markdown |
+| `next-harness config` | Where the configuration and state live |
 
 Useful flags: `--lang fr|en` on any command, `--max-relays <n>` and `--manual`
 on `run` and `resume`.
@@ -149,7 +149,7 @@ the harness's own message (`resets in 2 hours`, `try again in 30 seconds`,
   stop, with a bell) or in a native dialog.
 - **With no terminal and no desktop, Orion waits or stops. It never pays.**
 - **The interface of an interactive tool is never automated.** Orion copies the
-  prompt to the clipboard, tells you what to do, and waits for `orion resume`.
+  prompt to the clipboard, tells you what to do, and waits for `next-harness resume`.
 - **No telemetry.** Nothing is sent anywhere except what your harness already
   sends.
 - **Secrets are masked** in logs and in `HANDOFF.md`.
@@ -162,7 +162,7 @@ the harness's own message (`resets in 2 hours`, `try again in 30 seconds`,
 - Override it without recompiling: drop `*.toml` files in
   `<config_dir>/profiles.d/`. They are patches applied by harness `id`.
 - `<config_dir>/config.json` holds `max_relays` and `manual`, written by
-  `orion init` and shown by `orion config`.
+  `next-harness init` and shown by `next-harness config`.
 - `<config_dir>/state.json` holds the pauses.
 
 `<config_dir>` is the platform configuration directory (`%APPDATA%` on Windows,
@@ -219,8 +219,8 @@ and drives no window.
   read as UTC, so a pause can be a few hours too long or too short. It is
   recomputed on the next real attempt.
 - **Detection is cached for 10 minutes** so `status` and `init` stay instant.
-  `orion doctor --refresh` ignores the cache; installing a harness and running
-  `orion run` immediately may need that refresh.
+  `next-harness doctor --refresh` ignores the cache; installing a harness and running
+  `next-harness run` immediately may need that refresh.
 - **The catalogue is a snapshot.** Harnesses rename flags and binaries; when a
   probe fails the entry shows `not installed` rather than guessing.
 - **WSL is detected, never driven.**
@@ -282,12 +282,12 @@ prétend jamais être l'un des outils qu'il pilote.
 - [Règles de sécurité](#règles-de-sécurité)
 - [Compatibilité](#compatibilité)
 - [Limites assumées](#limites-assumées)
-- [Ce qu'Orion ne fait pas](#ce-quorion-ne-fait-pas)
+- [Ce qu'Orion ne fait pas](#ce-qunext-harness-ne-fait-pas)
 
 ### Fonctionnement
 
 ```text
-  vous ── orion run "ajoute un mode sombre" ──▶ .orion/TASK.md
+  vous ── next-harness run "ajoute un mode sombre" ──▶ .next-harness/TASK.md
                                                     │
                        ordre du catalogue           ▼
               ┌────────────────────▶ harnais #1 (gratuit) ──▶ terminé ──▶ fini
@@ -295,7 +295,7 @@ prétend jamais être l'un des outils qu'il pilote.
               │                          │ quota épuisé
               │                          ▼
               │            state.json : pause #1 jusqu'au reset (écriture atomique)
-              │            .orion/HANDOFF.md : tâche, git status, diff --stat,
+              │            .next-harness/HANDOFF.md : tâche, git status, diff --stat,
               │                              fin de sortie, « ne refais pas »
               │                          │
               └──────────────────────────┘  le suivant reçoit HANDOFF.md
@@ -311,13 +311,13 @@ réseau est celui que votre harnais fait déjà.
 ### Installation
 
 **Binaire prêt à l'emploi** — téléchargez l'archive de votre plateforme depuis
-les [Releases](https://github.com/<OWNER>/orion-relay/releases), vérifiez le
-`.sha256` à côté, puis placez `orion` dans votre `PATH`.
+les [Releases](https://github.com/<OWNER>/next-harness-relay/releases), vérifiez le
+`.sha256` à côté, puis placez `next-harness` dans votre `PATH`.
 
 **Depuis les sources** — Rust 1.85 minimum :
 
 ```sh
-cargo install --git https://github.com/<OWNER>/orion-relay --bin orion
+cargo install --git https://github.com/<OWNER>/next-harness-relay --bin next-harness
 ```
 
 Sous Linux, la compilation demande les en-têtes GTK et XDo (la question « payer »
@@ -331,19 +331,19 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 
 ```sh
 cd ~/code/mon-projet
-orion init                          # détecte l'installé, écrit les réglages
-orion doctor                        # ordre de relais et ce qui manque
-orion run "ajoute un mode sombre et des tests"
+next-harness init                          # détecte l'installé, écrit les réglages
+next-harness doctor                        # ordre de relais et ce qui manque
+next-harness run "ajoute un mode sombre et des tests"
 ```
 
 C'est toute la boucle. Si le premier harnais épuise son quota, Orion le met en
-pause, écrit `.orion/HANDOFF.md` et démarre le suivant. Quand tout est épuisé, il
+pause, écrit `.next-harness/HANDOFF.md` et démarre le suivant. Quand tout est épuisé, il
 demande : payer, attendre le reset, ou arrêter.
 
 Chaque exécution laisse sa trace dans le dépôt :
 
 ```text
-.orion/
+.next-harness/
 ├── TASK.md      la tâche, écrite une fois
 ├── HANDOFF.md   réécrit avant chaque bascule
 └── runs/        transcriptions par tentative (ANSI retiré, secrets masqués)
@@ -353,12 +353,12 @@ Chaque exécution laisse sa trace dans le dépôt :
 
 | Commande | Effet |
 | --- | --- |
-| `orion init` | Détecte les harnais installés, affiche l'ordre de relais, écrit `config.json` |
-| `orion run "<tâche>"` | Lance une tâche, avec relais sur quota |
-| `orion resume` | Reprend la tâche déjà présente dans `.orion/TASK.md` |
-| `orion status` | Quels harnais sont en pause, et jusqu'à quand |
-| `orion doctor [--refresh] [--report]` | Inventaire ; `--report` produit du Markdown collable |
-| `orion config` | Où vivent la configuration et l'état |
+| `next-harness init` | Détecte les harnais installés, affiche l'ordre de relais, écrit `config.json` |
+| `next-harness run "<tâche>"` | Lance une tâche, avec relais sur quota |
+| `next-harness resume` | Reprend la tâche déjà présente dans `.next-harness/TASK.md` |
+| `next-harness status` | Quels harnais sont en pause, et jusqu'à quand |
+| `next-harness doctor [--refresh] [--report]` | Inventaire ; `--report` produit du Markdown collable |
+| `next-harness config` | Où vivent la configuration et l'état |
 
 Options utiles : `--lang fr|en` sur toutes les commandes, `--max-relays <n>` et
 `--manual` sur `run` et `resume`.
@@ -388,7 +388,7 @@ seconds`, `resets at 14:30`), sinon une pause d'une heure s'applique.
   (payer / attendre / arrêter, avec bip) ou dans une boîte de dialogue native.
 - **Sans terminal ni interface, Orion attend ou s'arrête. Il ne paie jamais.**
 - **L'interface d'un outil interactif n'est jamais automatisée.** Orion copie
-  l'invite dans le presse-papiers, explique quoi faire et attend `orion resume`.
+  l'invite dans le presse-papiers, explique quoi faire et attend `next-harness resume`.
 - **Aucune télémétrie.** Rien n'est envoyé, hormis ce que votre harnais envoie
   déjà.
 - **Les secrets sont masqués** dans les journaux et dans `HANDOFF.md`.
@@ -422,8 +422,8 @@ aucune fenêtre.
   locale est lue comme UTC : la pause peut être trop longue ou trop courte de
   quelques heures. Elle est recalculée à la tentative réelle suivante.
 - **La détection est mise en cache 10 minutes** pour que `status` et `init`
-  restent instantanés. `orion doctor --refresh` ignore le cache ; installer un
-  harnais puis lancer `orion run` aussitôt peut nécessiter ce refresh.
+  restent instantanés. `next-harness doctor --refresh` ignore le cache ; installer un
+  harnais puis lancer `next-harness run` aussitôt peut nécessiter ce refresh.
 - **Le catalogue est un instantané.** Les harnais renomment options et binaires ;
   quand la sonde échoue, l'entrée indique `non installé` au lieu de deviner.
 - **WSL est détecté, jamais piloté.**

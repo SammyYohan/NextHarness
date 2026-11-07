@@ -1,7 +1,7 @@
 mod common;
 
 use common::TestDir;
-use orion_relay::state::State;
+use next_harness::state::State;
 
 #[test]
 fn pauses_survive_a_reload() {

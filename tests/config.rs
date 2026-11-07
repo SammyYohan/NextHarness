@@ -1,7 +1,7 @@
 mod common;
 
 use common::TestDir;
-use orion_relay::config::{Config, Mode, Tier, Verified, BUILTIN};
+use next_harness::config::{Config, Mode, Tier, Verified, BUILTIN};
 
 #[test]
 fn the_builtin_catalog_loads_without_warnings() {

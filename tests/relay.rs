@@ -6,12 +6,12 @@ mod common;
 use std::path::PathBuf;
 
 use common::TestDir;
-use orion_relay::config::Config;
-use orion_relay::detector::Detector;
-use orion_relay::gatekeeper::{SilentUi, Ui};
-use orion_relay::orchestrator::{self, Conclusion, Report, Session, Settings};
-use orion_relay::paths::Paths;
-use orion_relay::state::State;
+use next_harness::config::Config;
+use next_harness::detector::Detector;
+use next_harness::gatekeeper::{SilentUi, Ui};
+use next_harness::orchestrator::{self, Conclusion, Report, Session, Settings};
+use next_harness::paths::Paths;
+use next_harness::state::State;
 
 fn catalog(entries: &str) -> Config {
     let text = format!(
@@ -91,7 +91,7 @@ fn entry(id: &str, name: &str, mode: &str, run: &str, tier: &str) -> String {
 }
 
 #[test]
-fn a_quota_message_makes_orion_relay_to_the_next_harness() {
+fn a_quota_message_makes_next_harness_to_the_next_harness() {
     let house = House::new("relay-quota");
     let config = catalog(&format!(
         "{}{}",
@@ -122,8 +122,8 @@ fn a_quota_message_makes_orion_relay_to_the_next_harness() {
     assert_eq!(report.conclusion, Conclusion::Finished);
     assert_eq!(report.winner(), Some("second"));
     assert_eq!(report.attempts.len(), 2);
-    assert!(state.is_paused("first", orion_relay::timefmt::now_epoch()));
-    assert!(!state.is_paused("second", orion_relay::timefmt::now_epoch()));
+    assert!(state.is_paused("first", next_harness::timefmt::now_epoch()));
+    assert!(!state.is_paused("second", next_harness::timefmt::now_epoch()));
 
     // The task and the handoff exist, and the handoff tells the next harness not
     // to start over.
@@ -158,7 +158,7 @@ fn a_quota_word_inside_a_long_successful_log_pauses_nothing() {
 
     assert_eq!(report.conclusion, Conclusion::Finished);
     assert!(
-        !state.is_paused("wordy", orion_relay::timefmt::now_epoch()),
+        !state.is_paused("wordy", next_harness::timefmt::now_epoch()),
         "one mention inside a long successful run must not pause a harness"
     );
     assert!(
@@ -186,10 +186,10 @@ fn the_relay_limit_stops_the_walk() {
 
     assert_eq!(report.conclusion, Conclusion::Exhausted);
     assert_eq!(report.attempts.len(), 2);
-    assert!(state.is_paused("a", orion_relay::timefmt::now_epoch()));
-    assert!(state.is_paused("b", orion_relay::timefmt::now_epoch()));
+    assert!(state.is_paused("a", next_harness::timefmt::now_epoch()));
+    assert!(state.is_paused("b", next_harness::timefmt::now_epoch()));
     assert!(
-        !state.is_paused("c", orion_relay::timefmt::now_epoch()),
+        !state.is_paused("c", next_harness::timefmt::now_epoch()),
         "the third harness was never tried"
     );
 }
@@ -244,7 +244,7 @@ fn pauses_survive_a_restart() {
 
     // A new process would only have the file.
     let reloaded = State::load(&paths.state_file);
-    assert!(reloaded.is_paused("first", orion_relay::timefmt::now_epoch()));
+    assert!(reloaded.is_paused("first", next_harness::timefmt::now_epoch()));
 
     let mut state = reloaded;
     let second = house.relay(&config, "write the docs", &mut state, Settings::default());

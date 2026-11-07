@@ -1,5 +1,5 @@
 _version: 1
-app.name: "Orion Relay"
+app.name: "NextHarness"
 app.tagline: "One task, every coding harness you have installed."
 app.version: "version %{version}"
 

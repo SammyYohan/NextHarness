@@ -1,4 +1,4 @@
-use orion_relay::i18n::{parse_keys, sources, translate};
+use next_harness::i18n::{parse_keys, sources, translate};
 
 #[test]
 fn english_and_french_expose_exactly_the_same_keys() {

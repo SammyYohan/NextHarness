@@ -1,19 +1,19 @@
 [package]
-name = "orion-relay"
+name = "next-harness"
 version = "0.1.0-beta.1"
 edition = "2021"
 rust-version = "1.85"
 authors = ["<YOUR NAME>"]
 description = "Relay one coding task across AI coding harnesses, automatically moving on when a free quota runs out."
 license = "MIT"
-repository = "https://github.com/<OWNER>/orion-relay"
-homepage = "https://github.com/<OWNER>/orion-relay"
+repository = "https://github.com/<OWNER>/next-harness"
+homepage = "https://github.com/<OWNER>/next-harness"
 readme = "README.md"
 keywords = ["ai", "agents", "cli", "quota", "relay"]
 categories = ["command-line-utilities", "development-tools"]
 
 [[bin]]
-name = "orion"
+name = "next-harness"
 path = "src/main.rs"
 
 # Test fixture only: never uploaded with a release.
