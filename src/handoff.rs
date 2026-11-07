@@ -22,7 +22,8 @@ pub const OUTPUT_TAIL: usize = 40;
 
 /// Write the task document, creating `.NextHarness` if needed.
 pub fn write_task(paths: &Paths, task: &str) -> Result<()> {
-    fs::create_dir_all(&paths.next_harness_dir).map_err(|e| error::io(&paths.next_harness_dir, e))?;
+    fs::create_dir_all(&paths.next_harness_dir)
+        .map_err(|e| error::io(&paths.next_harness_dir, e))?;
     let body = format!("# {}\n\n{}\n", i18n::tr("handoff.task"), task.trim());
     fs::write(&paths.task_file, body).map_err(|e| error::io(&paths.task_file, e))
 }
@@ -52,7 +53,8 @@ pub struct Handoff<'a> {
 
 /// Rewrite `HANDOFF.md` for the next harness.
 pub fn write(paths: &Paths, root: &Path, doc: &Handoff) -> Result<()> {
-    fs::create_dir_all(&paths.next_harness_dir).map_err(|e| error::io(&paths.next_harness_dir, e))?;
+    fs::create_dir_all(&paths.next_harness_dir)
+        .map_err(|e| error::io(&paths.next_harness_dir, e))?;
 
     let mut body = String::new();
     body.push_str(&format!("# {}\n\n", i18n::tr("handoff.title")));

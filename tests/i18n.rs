@@ -1,7 +1,7 @@
 use next_harness::i18n::{parse_keys, sources, translate};
 
 #[test]
-fn english_and_french_expose_exactly_the_same_keys() {
+fn all_locales_expose_exactly_the_same_keys() {
     let mut seen: Vec<(&str, Vec<String>)> = Vec::new();
 
     for (locale, body) in sources() {
@@ -12,12 +12,16 @@ fn english_and_french_expose_exactly_the_same_keys() {
         seen.push((locale, keys));
     }
 
-    assert_eq!(seen.len(), 2, "two locales ship");
-    assert_eq!(
-        seen[0].1, seen[1].1,
-        "{} and {} must define the same keys",
-        seen[0].0, seen[1].0
-    );
+    assert!(seen.len() >= 2, "at least two locales ship");
+
+    let baseline = seen[0].1.clone();
+    for (locale, keys) in &seen[1..] {
+        assert_eq!(
+            baseline, *keys,
+            "en and {} must define the same keys",
+            locale
+        );
+    }
 }
 
 #[test]

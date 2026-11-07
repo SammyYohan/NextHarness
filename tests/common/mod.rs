@@ -19,8 +19,10 @@ impl TestDir {
     /// Create a fresh directory named after `tag`.
     pub fn new(tag: &str) -> Self {
         let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("next-harness-{}-{tag}-{unique}", std::process::id()));
+        let path = std::env::temp_dir().join(format!(
+            "next-harness-{}-{tag}-{unique}",
+            std::process::id()
+        ));
         let _ = std::fs::remove_dir_all(&path);
         std::fs::create_dir_all(&path).expect("create the temporary directory");
         Self { path }

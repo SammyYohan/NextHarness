@@ -14,7 +14,11 @@ fn invoke(dir: &TestDir, catalog: Option<&Path>, args: &[&str]) -> Output {
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
             let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
-            let bin_name = if cfg!(windows) { "next-harness.exe" } else { "next-harness" };
+            let bin_name = if cfg!(windows) {
+                "next-harness.exe"
+            } else {
+                "next-harness"
+            };
             Path::new(&manifest_dir).join("target/debug").join(bin_name)
         });
     let mut command = Command::new(bin);
@@ -176,8 +180,8 @@ fn resume_uses_the_saved_task_and_switches_language() {
     assert!(second.status.success(), "{}", text(&second));
 
     // The handoff prompt was used, so the previous attempt is not repeated.
-    let body =
-        std::fs::read_to_string(dir.path().join(".next-harness").join("HANDOFF.md")).expect("handoff");
+    let body = std::fs::read_to_string(dir.path().join(".next-harness").join("HANDOFF.md"))
+        .expect("handoff");
     assert!(body.contains("improve the parser"), "{body}");
 }
 

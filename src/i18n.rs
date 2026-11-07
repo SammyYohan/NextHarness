@@ -6,7 +6,7 @@
 
 /// Locales shipped with this build, most specific first is not needed because
 /// [`normalize`] reduces any tag to one of these.
-pub const LOCALES: [&str; 2] = ["en", "fr"];
+pub const LOCALES: [&str; 8] = ["en", "fr", "es", "de", "it", "pt", "zh", "ja"];
 
 /// Fallback locale used when nothing else matches.
 pub const DEFAULT_LOCALE: &str = "en";
@@ -62,10 +62,16 @@ pub fn translate(locale: &str, key: &str) -> String {
 }
 
 /// The raw locale files, used by the parity test and by `doctor`.
-pub fn sources() -> [(&'static str, &'static str); 2] {
+pub fn sources() -> [(&'static str, &'static str); 8] {
     [
         ("en", include_str!("../locales/en.yml")),
         ("fr", include_str!("../locales/fr.yml")),
+        ("es", include_str!("../locales/es.yml")),
+        ("de", include_str!("../locales/de.yml")),
+        ("it", include_str!("../locales/it.yml")),
+        ("pt", include_str!("../locales/pt.yml")),
+        ("zh", include_str!("../locales/zh.yml")),
+        ("ja", include_str!("../locales/ja.yml")),
     ]
 }
 
@@ -93,7 +99,16 @@ mod tests {
         assert_eq!(normalize("fr-FR"), Some("fr"));
         assert_eq!(normalize("FR_ca"), Some("fr"));
         assert_eq!(normalize("en_GB"), Some("en"));
-        assert_eq!(normalize("de"), None);
+        assert_eq!(normalize("es"), Some("es"));
+        assert_eq!(normalize("es-ES"), Some("es"));
+        assert_eq!(normalize("de"), Some("de"));
+        assert_eq!(normalize("it"), Some("it"));
+        assert_eq!(normalize("pt"), Some("pt"));
+        assert_eq!(normalize("pt-BR"), Some("pt"));
+        assert_eq!(normalize("zh"), Some("zh"));
+        assert_eq!(normalize("zh-CN"), Some("zh"));
+        assert_eq!(normalize("ja"), Some("ja"));
+        assert_eq!(normalize("ja-JP"), Some("ja"));
         assert_eq!(normalize(""), None);
     }
 
