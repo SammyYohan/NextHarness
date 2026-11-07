@@ -4,8 +4,8 @@
 
 **One coding task. Every AI coding harness you already have. No quota wasted.**
 
-[![CI](https://github.com/<OWNER>/next-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/next-harness/actions/workflows/ci.yml)
-[![release](https://img.shields.io/github/v/release/<OWNER>/next-harness?include_prereleases)](https://github.com/<OWNER>/next-harness/releases)
+[![CI](https://github.com/SammyYohan/next-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/SammyYohan/next-harness/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/SammyYohan/next-harness?include_prereleases)](https://github.com/SammyYohan/next-harness/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
 
@@ -73,13 +73,13 @@ traffic is the one your harness already makes.
 ### Install
 
 **Prebuilt binary** — download the archive for your platform from
-[Releases](https://github.com/<OWNER>/next-harness-relay/releases), verify the
+[Releases](https://github.com/SammyYohan/next-harness/releases), verify the
 `.sha256` next to it, and put `next-harness` on your `PATH`.
 
 **From source** — you need Rust 1.85 or newer:
 
 ```sh
-cargo install --git https://github.com/<OWNER>/next-harness-relay --bin next-harness
+cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
 ```
 
 On Linux the build needs the GTK and XDo headers, because the pay prompt is a
@@ -246,9 +246,9 @@ are all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 NextHarness Relay is MIT and stays free. If it saved you a subscription:
 
-- [GitHub Sponsors](https://github.com/sponsors/<OWNER>)
-- [Ko-fi](https://ko-fi.com/<OWNER>)
-- [Buy Me a Coffee](https://www.buymeacoffee.com/<OWNER>)
+- [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
+- [Ko-fi](https://ko-fi.com/SammyYohan)
+- [Buy Me a Coffee](https://www.buymeacoffee.com/SammyYohan)
 
 ### License
 
@@ -311,13 +311,13 @@ réseau est celui que votre harnais fait déjà.
 ### Installation
 
 **Binaire prêt à l'emploi** — téléchargez l'archive de votre plateforme depuis
-les [Releases](https://github.com/<OWNER>/next-harness-relay/releases), vérifiez le
+les [Releases](https://github.com/SammyYohan/next-harness/releases), vérifiez le
 `.sha256` à côté, puis placez `next-harness` dans votre `PATH`.
 
 **Depuis les sources** — Rust 1.85 minimum :
 
 ```sh
-cargo install --git https://github.com/<OWNER>/next-harness-relay --bin next-harness
+cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
 ```
 
 Sous Linux, la compilation demande les en-têtes GTK et XDo (la question « payer »
@@ -450,9 +450,9 @@ non testée sont les bienvenus. Voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
 NextHarness Relay est sous MIT et reste gratuit. S'il vous a évité un abonnement :
 
-- [GitHub Sponsors](https://github.com/sponsors/<OWNER>)
-- [Ko-fi](https://ko-fi.com/<OWNER>)
-- [Buy Me a Coffee](https://www.buymeacoffee.com/<OWNER>)
+- [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
+- [Ko-fi](https://ko-fi.com/SammyYohan)
+- [Buy Me a Coffee](https://www.buymeacoffee.com/SammyYohan)
 
 ### Licence
 
