@@ -1,0 +1,45 @@
+[package]
+name = "orion-relay"
+version = "0.1.0-beta.1"
+edition = "2021"
+rust-version = "1.85"
+authors = ["<YOUR NAME>"]
+description = "Relay one coding task across AI coding harnesses, automatically moving on when a free quota runs out."
+license = "MIT"
+repository = "https://github.com/<OWNER>/orion-relay"
+homepage = "https://github.com/<OWNER>/orion-relay"
+readme = "README.md"
+keywords = ["ai", "agents", "cli", "quota", "relay"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "orion"
+path = "src/main.rs"
+
+# Test fixture only: never uploaded with a release.
+[[bin]]
+name = "fake-harness"
+path = "src/bin/fake_harness.rs"
+test = false
+required-features = []
+
+[profile.release]
+lto = "thin"
+strip = true
+
+[dependencies]
+arboard = "3.7.0"
+clap = { version = "4.6.7", features = ["derive", "env"] }
+crossterm = "0.29.0"
+directories = "6.0.0"
+native-dialog = "0.9.7"
+portable-pty = "0.9.0"
+regex = "1.13.1"
+rust-i18n = "4.2.4"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sys-locale = "0.3.2"
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "time", "sync"] }
+toml = "1.2.1"
+which = "8.0.6"

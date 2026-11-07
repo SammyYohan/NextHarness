@@ -1,0 +1,8 @@
+# One checkout, one line ending: the shell steps in CI must stay LF even when
+# the repository is cloned on Windows.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.zip binary
+*.gz binary

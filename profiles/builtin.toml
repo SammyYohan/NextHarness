@@ -1,0 +1,481 @@
+# ORION-RELAY — built-in harness catalog (profiles.toml)
+# Compiled on 2026-11-06 from public docs (see `source` on each entry).
+#
+# READ THIS FIRST
+# - Free tiers change every month. `default_tier` is only a starting suggestion.
+#   "unknown" is treated as "paid" until the user says otherwise (fail-safe).
+# - `verified`: "official"    = official docs/README
+#               "third_party" = third-party guide or tool that wraps the harness
+#               "unverified"  = must be tested on a real machine before trusting
+# - `run` is the argument list after the binary. Placeholders:
+#     {prompt}     ALWAYS a short fixed sentence pointing to .orion/TASK.md or
+#                  .orion/HANDOFF.md (never user text: avoids quoting bugs, argument
+#                  length limits and the Windows .cmd-shim escaping restrictions).
+#     {unattended} replaced by `unattended_args` only if the user opted in for this
+#                  harness; removed otherwise.
+# - `unattended_required = true` means the harness stalls on permission prompts
+#   without those args, so it is skipped (manual mode) unless the user opted in.
+# - A user file in <config_dir>/profiles.d/*.toml overrides entries by `id`.
+
+schema = 1
+catalog_date = "2026-11-06"
+
+# ---------------------------------------------------------------------------
+# Generic signals (used when a profile has no specific pattern).
+# Never decide on a pattern alone: see the "two-signal rule" in the project prompt.
+# ---------------------------------------------------------------------------
+[detection_generic]
+quota = [
+  '(?i)rate[ _-]?limit',
+  '(?i)\bquota\b',
+  '(?i)usage[ _-]?limit',
+  '(?i)limit (has been )?(reached|exceeded)',
+  '(?i)hit your limit',
+  '(?i)too many requests',
+  '(?i)resource[ _-]?exhausted',
+  '(?i)out of (credits|free)',
+  '\b429\b',
+]
+auth = [
+  '(?i)not (logged|signed) in',
+  '(?i)please (log|sign)[ -]?in',
+  '(?i)unauthori[sz]ed',
+  '(?i)invalid api key',
+  '(?i)authentication (failed|required|error)',
+  '(?i)free tier .*(discontinued|ended)',
+]
+reset = [
+  '(?i)resets? (in|after) (\d+)\s*(h|hr|hours?|m|min|minutes?|d|days?)',
+  '(?i)try again (in|after) (\d+)\s*(s|sec|seconds?|m|min|minutes?|h|hours?)',
+  '(?i)resets? (at|on) ([0-9]{1,2}:[0-9]{2})',
+]
+
+# Extra places to look for binaries, on top of PATH (existence check only).
+# Also resolve at runtime: `npm prefix -g`, nvm/volta/pnpm dirs, and on macOS the
+# PATH of the login shell (GUI-launched processes have a minimal PATH).
+[detect_search_dirs]
+unix = [
+  "~/.local/bin", "~/.cargo/bin", "~/.bun/bin", "~/go/bin", "~/.npm-global/bin",
+  "~/.volta/bin", "~/.opencode/bin", "/usr/local/bin", "/opt/homebrew/bin",
+  "/home/linuxbrew/.linuxbrew/bin",
+]
+windows = [
+  '%APPDATA%\npm', '%USERPROFILE%\.local\bin', '%USERPROFILE%\.cargo\bin',
+  '%USERPROFILE%\.bun\bin', '%LOCALAPPDATA%\Microsoft\WinGet\Links',
+  '%USERPROFILE%\scoop\shims', '%ProgramData%\chocolatey\bin',
+]
+
+# ===========================================================================
+# HEADLESS HARNESSES — free-capable first
+# ===========================================================================
+
+[[harness]]
+id = "opencode"
+name = "OpenCode"
+mode = "headless"
+binaries = ["opencode"]
+version_args = ["--version"]
+run = ["run", "{unattended}", "{prompt}"]
+run_resume = ["run", "--continue", "{unattended}", "{prompt}"]
+unattended_args = ["--dangerously-skip-permissions"]
+unattended_required = false
+acp_args = ["acp"]
+default_tier = "free"
+enabled_by_default = true
+verified = "official"
+source = "https://opencode.ai/docs/cli.md"
+install_hint = "curl -fsSL https://opencode.ai/install | bash"
+notes = "Free usage comes from free models offered via its Zen service (account needed, catalog rotates). `unattended` flag documented by a third-party skill, check with `opencode run --help`."
+
+[[harness]]
+id = "kilo"
+name = "Kilo CLI"
+mode = "headless"
+binaries = ["kilo"]
+version_args = ["--version"]
+run = ["run", "{unattended}", "{prompt}"]
+unattended_args = ["--auto"]
+unattended_required = true
+default_tier = "free"
+enabled_by_default = true
+verified = "official"
+source = "https://kilocode.ai/docs/cli"
+install_hint = "npm install -g @kilocode/cli"
+notes = "`--auto` disables ALL permission prompts. Free models via the Kilo gateway (catalog changes)."
+
+[[harness]]
+id = "kilo-legacy"
+name = "Kilo Code CLI (older binary name)"
+mode = "headless"
+binaries = ["kilocode"]
+version_args = ["--version"]
+run = ["{unattended}", "{prompt}"]
+unattended_args = ["--auto"]
+unattended_required = true
+default_tier = "free"
+enabled_by_default = true
+verified = "official"
+source = "https://kilocode.ai/docs/cli"
+install_hint = "npm install -g @kilocode/cli"
+notes = "Older docs use `kilocode --auto <prompt>`. Skipped automatically if `kilo` is also found."
+
+[[harness]]
+id = "crush"
+name = "Crush (Charm)"
+mode = "headless"
+binaries = ["crush"]
+version_args = ["--version"]
+run = ["run", "{prompt}"]
+run_resume = ["run", "-C", "{prompt}"]
+default_tier = "unknown"
+enabled_by_default = true
+verified = "official"
+source = "https://next-docs.charm.land/crush/cli/run.html"
+notes = "`crush run` is non-interactive and also reads stdin. Free access depends on the provider you configured."
+
+[[harness]]
+id = "agy"
+name = "Antigravity CLI"
+mode = "headless"
+binaries = ["agy"]
+version_args = ["--version"]
+run = ["-p", "{prompt}"]
+json_args = ["--output-format", "json"]
+needs_pty = true
+default_tier = "free"
+enabled_by_default = true
+verified = "third_party"
+source = "https://computingforgeeks.com/antigravity-cli-cheat-sheet/"
+install_hint = "see https://antigravity.google/cli"
+notes = "MUST run under a pseudo-terminal: `agy -p` prints nothing or hangs when stdout is not a real terminal (github.com/google-antigravity/antigravity-cli/issues/318). Free quota is small and counted per period. It replaced Gemini CLI for individual users on 2026-06-18."
+
+[[harness]]
+id = "freebuff"
+name = "Freebuff"
+mode = "interactive"
+binaries = ["freebuff"]
+version_args = ["--version"]
+manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+default_tier = "free"
+enabled_by_default = true
+verified = "official"
+source = "https://github.com/CodebuffAI/freebuff/issues/947"
+install_hint = "npm install -g freebuff"
+notes = "TUI only: no -p/--print/--json, no prompt argument, stdin piping hangs (verified on v0.0.140 in that issue). Free thanks to ads, with a login, a waiting-room queue and timed sessions. Orion does NOT automate it: it prepares the handoff and tells the human. Never bypass the ads, the queue or the login."
+
+[[harness]]
+id = "cline"
+name = "Cline CLI"
+mode = "headless"
+binaries = ["cline"]
+version_args = ["--version"]
+run = ["--json", "{unattended}", "{prompt}"]
+unattended_args = ["-y"]
+unattended_required = false
+default_tier = "unknown"
+enabled_by_default = true
+verified = "official"
+source = "https://docs.cline.bot/cline-cli/three-core-flows.md"
+install_hint = "npm install -g cline"
+notes = "Headless when `--json`, `-y`, piped stdin or redirected stdout. With a prompt argument it auto-approves tools by default: always work on a git branch."
+
+[[harness]]
+id = "goose"
+name = "Goose (Block)"
+mode = "headless"
+binaries = ["goose"]
+version_args = ["--version"]
+run = ["run", "-t", "{prompt}"]
+default_tier = "unknown"
+enabled_by_default = true
+verified = "third_party"
+source = "https://github.com/KerryRitter/programmatic-agent-router"
+notes = "Bring-your-own model (can be a local one). Autonomy flags not verified."
+
+[[harness]]
+id = "aider"
+name = "Aider"
+mode = "headless"
+binaries = ["aider"]
+version_args = ["--version"]
+run = ["--message", "{prompt}", "--no-auto-commits", "{unattended}"]
+unattended_args = ["--yes"]
+unattended_required = true
+default_tier = "unknown"
+enabled_by_default = true
+verified = "third_party"
+source = "https://github.com/KerryRitter/programmatic-agent-router"
+install_hint = "curl -LsSf https://aider.chat/install.sh | sh"
+notes = "Bring-your-own model. Commits by default: `--no-auto-commits` keeps git history under Orion's control."
+
+[[harness]]
+id = "hermes"
+name = "Hermes Agent (Nous Research)"
+mode = "headless"
+binaries = ["hermes"]
+version_args = ["--version"]
+run = ["chat", "--quiet", "-q", "{prompt}"]
+acp_args = ["acp"]
+platforms = ["linux", "macos", "wsl"]
+default_tier = "unknown"
+enabled_by_default = true
+verified = "official"
+source = "https://hermes-agent.nousresearch.com/docs/reference/cli-commands"
+install_hint = "official installer supports Linux, macOS and WSL2"
+notes = "On Windows it runs inside WSL2 only: v1 reports it as 'available via WSL' without driving it. Has its own provider fallback chain."
+
+[[harness]]
+id = "pi"
+name = "Pi"
+mode = "headless"
+binaries = ["pi"]
+version_args = ["--version"]
+run = ["-p", "--no-extensions", "{prompt}"]
+default_tier = "unknown"
+enabled_by_default = false
+verified = "unverified"
+source = "https://pkg.go.dev/github.com/8ugustdev/rmoted/internal/agents"
+install_hint = "npm install -g @earendil-works/pi-coding-agent"
+notes = "Binary and npm package confirmed; the `-p` flag is not confirmed. `--no-extensions` avoids interactive extensions that hang headless runs (third-party report). Test before enabling."
+
+[[harness]]
+id = "vibe"
+name = "Mistral Vibe"
+mode = "headless"
+binaries = ["vibe"]
+version_args = ["--version"]
+run = ["--prompt", "{unattended}", "{prompt}"]
+json_args = ["--output", "json"]
+unattended_args = ["--auto-approve"]
+unattended_required = false
+requires_env = ["MISTRAL_API_KEY"]
+auth_files = ["~/.vibe/.env"]
+default_tier = "unknown"
+enabled_by_default = true
+verified = "official"
+source = "https://github.com/mistralai/mistral-vibe"
+install_hint = "uv tool install mistral-vibe"
+notes = "Depending on the version, programmatic mode may auto-approve tool calls by default: use a git branch. Windows works but UNIX is the officially targeted platform."
+
+# ===========================================================================
+# HEADLESS HARNESSES — paid or subscription by default
+# ===========================================================================
+
+[[harness]]
+id = "claude"
+name = "Claude Code"
+mode = "headless"
+binaries = ["claude"]
+version_args = ["--version"]
+run = ["-p", "{unattended}", "{prompt}"]
+unattended_required = false
+quota_ignores_exit_code = true
+default_tier = "paid"
+enabled_by_default = true
+verified = "third_party"
+source = "https://github.com/KerryRitter/programmatic-agent-router"
+install_hint = "curl -fsSL https://claude.ai/install.sh | bash"
+notes = "A usage-limit message can come back as normal output with exit code 0, so the exit code alone is never enough. Set `unattended_args` in a user override if you want edits without prompts."
+
+[[harness]]
+id = "codex"
+name = "Codex CLI"
+mode = "headless"
+binaries = ["codex"]
+version_args = ["--version"]
+run = ["exec", "{unattended}", "{prompt}"]
+unattended_args = ["--full-auto"]
+unattended_required = false
+default_tier = "paid"
+enabled_by_default = true
+verified = "third_party"
+source = "https://github.com/KerryRitter/programmatic-agent-router"
+install_hint = "npm install -g @openai/codex"
+notes = "Autonomy flag taken from a third-party comparison: check `codex exec --help`."
+
+[[harness]]
+id = "copilot"
+name = "GitHub Copilot CLI"
+mode = "headless"
+binaries = ["copilot"]
+version_args = ["--version"]
+run = ["{unattended}", "-p", "{prompt}"]
+unattended_args = ["--allow-all-tools"]
+unattended_required = true
+startup_grace_s = 45
+default_tier = "unknown"
+enabled_by_default = true
+verified = "third_party"
+source = "https://glama.ai/mcp/servers/owkpc6lamf"
+notes = "Non-interactive mode hangs without --allow-all-tools. Loading MCP servers can take 10-30 s at startup. Remaining quota cannot be queried non-interactively. Automatic model routing may hit an exhausted quota."
+
+[[harness]]
+id = "cursor-agent"
+name = "Cursor CLI"
+mode = "headless"
+binaries = ["cursor-agent"]
+version_args = ["--version"]
+run = ["-p", "{unattended}", "{prompt}"]
+unattended_required = false
+default_tier = "unknown"
+enabled_by_default = true
+verified = "third_party"
+source = "https://github.com/KerryRitter/programmatic-agent-router"
+install_hint = "curl https://cursor.com/install -fsS | bash"
+notes = "Binary name differs from the `cursor` editor launcher: do not confuse them."
+
+[[harness]]
+id = "grok"
+name = "Grok Build"
+mode = "headless"
+binaries = ["grok"]
+version_args = ["--version"]
+run = ["-p", "{unattended}", "{prompt}"]
+unattended_required = false
+default_tier = "paid"
+enabled_by_default = true
+verified = "third_party"
+source = "https://www.verdent.ai/guides/grok-build-install"
+install_hint = "curl -fsSL https://x.ai/cli/install.sh | bash (PowerShell installer exists on Windows)"
+notes = "Sources say a paid subscription is required (no free plan) and the product is in beta: check your own access. Headless runs need an API key in the environment (GROK_CODE_XAI_API_KEY), not the browser login."
+
+[[harness]]
+id = "qwen"
+name = "Qwen Code"
+mode = "headless"
+binaries = ["qwen"]
+version_args = ["--version"]
+run = ["-p", "{unattended}", "{prompt}"]
+unattended_required = false
+default_tier = "paid"
+enabled_by_default = true
+verified = "official"
+source = "https://qwenlm.github.io/qwen-code-docs/en/cli/authentication"
+install_hint = "npm install -g @qwen-code/qwen-code"
+notes = "Its free OAuth tier was discontinued on 2026-04-15: bring your own API key, a coding plan, or a local model. Headless mode needs credentials in environment variables."
+
+[[harness]]
+id = "droid"
+name = "Droid (Factory)"
+mode = "headless"
+binaries = ["droid"]
+version_args = ["--version"]
+run = ["exec", "{unattended}", "{prompt}"]
+unattended_args = ["--auto", "low"]
+unattended_required = true
+requires_env = ["FACTORY_API_KEY"]
+default_tier = "paid"
+enabled_by_default = true
+verified = "official"
+source = "https://docs.factory.ai/droid-exec/overview"
+notes = "Fails fast when an action exceeds the autonomy level. Also supports `-f <file>` for the prompt."
+
+[[harness]]
+id = "gemini"
+name = "Gemini CLI (legacy)"
+mode = "headless"
+binaries = ["gemini"]
+version_args = ["--version"]
+run = ["--prompt", "{prompt}"]
+default_tier = "paid"
+enabled_by_default = false
+verified = "third_party"
+source = "https://letsdatascience.com/news/google-replaces-gemini-cli-with-antigravity-cli-574b2056"
+notes = "Stopped serving free, Pro and Ultra individual users on 2026-06-18 (enterprise and paid API access unchanged). Disabled by default."
+
+# ---------------------------------------------------------------------------
+# DeepSeek-based agents (all need a DeepSeek API key: pay-per-token)
+# ---------------------------------------------------------------------------
+
+[[harness]]
+id = "whale"
+name = "Whale (DeepSeek)"
+mode = "headless"
+binaries = ["whale"]
+version_args = ["--version"]
+run = ["exec", "{prompt}"]
+requires_env = ["DEEPSEEK_API_KEY"]
+default_tier = "paid"
+enabled_by_default = true
+verified = "official"
+source = "https://pkg.go.dev/github.com/usewhale/whale@v0.1.2"
+install_hint = "curl -fsSL https://raw.githubusercontent.com/usewhale/whale/main/scripts/install.sh | sh"
+notes = "Early development per its own README. The key may also be saved by `whale setup`."
+
+[[harness]]
+id = "orca"
+name = "Orca (DeepSeek)"
+mode = "headless"
+binaries = ["orca"]
+version_args = ["--version"]
+run = ["exec", "{unattended}", "{prompt}"]
+run_resume = ["exec", "--continue", "{unattended}", "{prompt}"]
+unattended_args = ["--approval-mode", "full-auto"]
+unattended_required = false
+requires_env = ["DEEPSEEK_API_KEY"]
+default_tier = "paid"
+enabled_by_default = true
+verified = "official"
+source = "https://github.com/echoVic/blade-deepseek/wiki"
+install_hint = "npm install -g @blade-ai/orca"
+
+[[harness]]
+id = "deepseek-tui"
+name = "DeepSeek TUI"
+mode = "headless"
+binaries = ["deepseek"]
+companion_binaries = ["deepseek-tui"]
+version_args = ["--version"]
+run = ["{prompt}"]
+requires_env = ["DEEPSEEK_API_KEY"]
+default_tier = "paid"
+enabled_by_default = false
+verified = "unverified"
+source = "https://github.com/Hmbown/DeepSeek-TUI"
+install_hint = "npm install -g deepseek-tui"
+notes = "Needs both binaries. The README shows `deepseek \"prompt\"` as a one-shot but it is not confirmed that this never opens the TUI: test with a harmless prompt and an idle timeout before enabling."
+
+# ===========================================================================
+# GUI APPLICATIONS — detected by name, never driven: Orion only prepares the
+# handoff, copies the sentence to the clipboard and notifies the human.
+# ===========================================================================
+# Detection: macOS /Applications and ~/Applications (*.app); Windows Start Menu
+# shortcuts, %LOCALAPPDATA%\Programs and the Uninstall registry keys (DisplayName);
+# Linux .desktop files (/usr/share/applications, ~/.local/share/applications,
+# flatpak and snap export dirs). Match case-insensitively on `gui_keywords`.
+
+[[harness]]
+id = "antigravity-app"
+name = "Antigravity (desktop app)"
+mode = "gui"
+gui_keywords = ["antigravity"]
+manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+default_tier = "free"
+enabled_by_default = true
+verified = "unverified"
+source = "https://dev.to/jangwook_kim_e31e7291ad98/google-io-2026-antigravity-20-deep-dive-gemini-cli-is-gone-the-agent-ide-war-has-begun-4hn8"
+notes = "Only the macOS app path /Applications/Antigravity.app was seen in a source. Other OS locations are found by keyword."
+
+[[harness]]
+id = "freebuff-desktop"
+name = "Freebuff Desktop"
+mode = "gui"
+gui_keywords = ["freebuff"]
+manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+default_tier = "free"
+enabled_by_default = true
+verified = "unverified"
+source = "https://github.com/CodebuffAI/freebuff"
+notes = "The repository advertises desktop downloads for macOS, Windows and Linux."
+
+[[harness]]
+id = "cursor-app"
+name = "Cursor (editor)"
+mode = "gui"
+gui_keywords = ["cursor"]
+manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+default_tier = "unknown"
+enabled_by_default = true
+verified = "unverified"
+source = "https://pkg.go.dev/github.com/GrayCodeAI/hawk/internal/providers"
+notes = "Third-party detectors look for the `cursor` command or the macOS app named Cursor."
