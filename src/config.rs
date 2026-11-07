@@ -21,13 +21,13 @@ fn default_true() -> bool {
     true
 }
 
-/// How Orion is allowed to use a harness.
+/// How NextHarness is allowed to use a harness.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Mode {
-    /// Orion starts it and reads its output.
+    /// NextHarness starts it and reads its output.
     Headless,
-    /// A terminal agent a human drives; Orion only prepares the handoff.
+    /// A terminal agent a human drives; NextHarness only prepares the handoff.
     Interactive,
     /// A desktop application; detected by name, never driven.
     Gui,
@@ -56,7 +56,7 @@ impl Tier {
         }
     }
 
-    /// True when Orion must ask before starting this harness.
+    /// True when NextHarness must ask before starting this harness.
     pub fn requires_consent(self) -> bool {
         !matches!(self, Tier::Free)
     }
@@ -118,7 +118,7 @@ pub struct Harness {
     pub id: String,
     /// Human name.
     pub name: String,
-    /// How Orion may use it.
+    /// How NextHarness may use it.
     pub mode: Mode,
     /// Executable names looked up on `PATH`.
     #[serde(default)]
@@ -132,7 +132,7 @@ pub struct Harness {
     /// Template started for a task; must contain `{prompt}`.
     #[serde(default)]
     pub run: Vec<String>,
-    /// Template used by `orion resume`.
+    /// Template used by `next-harness resume`.
     #[serde(default)]
     pub run_resume: Vec<String>,
     /// Arguments that disable permission prompts.
@@ -162,7 +162,7 @@ pub struct Harness {
     /// Price tier.
     #[serde(default)]
     pub default_tier: Tier,
-    /// Whether `orion run` may consider it without being asked.
+    /// Whether `next-harness run` may consider it without being asked.
     #[serde(default = "default_true")]
     pub enabled_by_default: bool,
     /// Trust level of the entry.
@@ -195,7 +195,7 @@ pub struct Harness {
 }
 
 impl Harness {
-    /// True when Orion starts this harness itself.
+    /// True when NextHarness starts this harness itself.
     pub fn is_headless(&self) -> bool {
         self.mode == Mode::Headless
     }
@@ -244,11 +244,11 @@ impl Config {
         Self::parse(BUILTIN, None, "<builtin>")
     }
 
-    /// Load the catalog for this user: built-in (or `ORION_CATALOG`), then the
+    /// Load the catalog for this user: built-in (or `NextHarness_CATALOG`), then the
     /// overrides in `<config_dir>/profiles.d`.
     pub fn load(config_dir: &Path) -> Result<Self> {
         let override_dir = config_dir.join("profiles.d");
-        match std::env::var_os("ORION_CATALOG") {
+        match std::env::var_os("NextHarness_CATALOG") {
             Some(path) => {
                 let path = PathBuf::from(path);
                 let text = std::fs::read_to_string(&path).map_err(|e| error::io(&path, e))?;

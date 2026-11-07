@@ -48,7 +48,7 @@ impl Platform {
     }
 }
 
-/// What Orion knows about one harness on this machine.
+/// What NextHarness knows about one harness on this machine.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Status {

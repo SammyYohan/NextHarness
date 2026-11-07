@@ -1,4 +1,4 @@
-//! `orion doctor`: what this machine has, in a form a maintainer can act on.
+//! `next-harness doctor`: what this machine has, in a form a maintainer can act on.
 //!
 //! The `--report` output is Markdown meant to be pasted into an issue. It
 //! contains the operating system, the version, and one line per harness — never
@@ -75,7 +75,7 @@ pub fn lines(config: &Config, detections: &[Detection], paths: &Paths) -> Vec<St
 pub fn markdown(config: &Config, detections: &[Detection], paths: &Paths) -> String {
     let mut out = String::new();
     out.push_str(&format!("# {}\n\n", i18n::tr("cli.doctor.title")));
-    out.push_str(&format!("- orion: {VERSION}\n"));
+    out.push_str(&format!("- next-harness: {VERSION}\n"));
     out.push_str(&format!("- system: {}\n", system()));
     out.push_str(&format!("- rust: {}\n", rustc_version()));
     out.push_str(&format!(

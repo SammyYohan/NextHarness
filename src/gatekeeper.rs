@@ -4,7 +4,7 @@
 //! Order of preference is deliberate. A terminal gets a three-way prompt (pay,
 //! wait, cancel) preceded by a bell, because the whole point is to interrupt
 //! whoever walked away. A desktop session gets a native yes/no dialog. With
-//! neither, Orion waits for the announced reset or stops: it never spends
+//! neither, NextHarness waits for the announced reset or stops: it never spends
 //! because nobody was there to be asked.
 
 use std::io::IsTerminal;
@@ -207,7 +207,7 @@ fn read_key() -> Option<char> {
     answer
 }
 
-/// Waits for any keystroke, used by `orion resume` and manual mode.
+/// Waits for any keystroke, used by `next-harness resume` and manual mode.
 pub fn wait_for_key() -> bool {
     use crossterm::event::{Event, KeyCode, KeyEventKind};
 

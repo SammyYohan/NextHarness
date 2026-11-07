@@ -8,8 +8,8 @@
 #               "third_party" = third-party guide or tool that wraps the harness
 #               "unverified"  = must be tested on a real machine before trusting
 # - `run` is the argument list after the binary. Placeholders:
-#     {prompt}     ALWAYS a short fixed sentence pointing to .orion/TASK.md or
-#                  .orion/HANDOFF.md (never user text: avoids quoting bugs, argument
+#     {prompt}     ALWAYS a short fixed sentence pointing to .NextHarness/TASK.md or
+#                  .NextHarness/HANDOFF.md (never user text: avoids quoting bugs, argument
 #                  length limits and the Windows .cmd-shim escaping restrictions).
 #     {unattended} replaced by `unattended_args` only if the user opted in for this
 #                  harness; removed otherwise.
@@ -155,13 +155,13 @@ name = "Freebuff"
 mode = "interactive"
 binaries = ["freebuff"]
 version_args = ["--version"]
-manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "official"
 source = "https://github.com/CodebuffAI/freebuff/issues/947"
 install_hint = "npm install -g freebuff"
-notes = "TUI only: no -p/--print/--json, no prompt argument, stdin piping hangs (verified on v0.0.140 in that issue). Free thanks to ads, with a login, a waiting-room queue and timed sessions. Orion does NOT automate it: it prepares the handoff and tells the human. Never bypass the ads, the queue or the login."
+notes = "TUI only: no -p/--print/--json, no prompt argument, stdin piping hangs (verified on v0.0.140 in that issue). Free thanks to ads, with a login, a waiting-room queue and timed sessions. NextHarness does NOT automate it: it prepares the handoff and tells the human. Never bypass the ads, the queue or the login."
 
 [[harness]]
 id = "cline"
@@ -206,7 +206,7 @@ enabled_by_default = true
 verified = "third_party"
 source = "https://github.com/KerryRitter/programmatic-agent-router"
 install_hint = "curl -LsSf https://aider.chat/install.sh | sh"
-notes = "Bring-your-own model. Commits by default: `--no-auto-commits` keeps git history under Orion's control."
+notes = "Bring-your-own model. Commits by default: `--no-auto-commits` keeps git history under NextHarness's control."
 
 [[harness]]
 id = "hermes"
@@ -436,7 +436,7 @@ install_hint = "npm install -g deepseek-tui"
 notes = "Needs both binaries. The README shows `deepseek \"prompt\"` as a one-shot but it is not confirmed that this never opens the TUI: test with a harmless prompt and an idle timeout before enabling."
 
 # ===========================================================================
-# GUI APPLICATIONS — detected by name, never driven: Orion only prepares the
+# GUI APPLICATIONS — detected by name, never driven: NextHarness only prepares the
 # handoff, copies the sentence to the clipboard and notifies the human.
 # ===========================================================================
 # Detection: macOS /Applications and ~/Applications (*.app); Windows Start Menu
@@ -449,7 +449,7 @@ id = "antigravity-app"
 name = "Antigravity (desktop app)"
 mode = "gui"
 gui_keywords = ["antigravity"]
-manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "unverified"
@@ -461,7 +461,7 @@ id = "freebuff-desktop"
 name = "Freebuff Desktop"
 mode = "gui"
 gui_keywords = ["freebuff"]
-manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "unverified"
@@ -473,7 +473,7 @@ id = "cursor-app"
 name = "Cursor (editor)"
 mode = "gui"
 gui_keywords = ["cursor"]
-manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
 default_tier = "unknown"
 enabled_by_default = true
 verified = "unverified"

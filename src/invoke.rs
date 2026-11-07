@@ -3,10 +3,10 @@
 //! Windows `CreateProcess` cannot execute a `.cmd`/`.bat` shim, and most npm
 //! installed harnesses *are* such shims. The fix avoids quoting entirely: the
 //! child is `cmd.exe /d /s /c <stem> <args…>` where `<stem>` is a bare command
-//! name (no quotes, no separators) resolved through `PATH`, which Orion points
+//! name (no quotes, no separators) resolved through `PATH`, which NextHarness points
 //! at the binary's own directory. Every argument that follows is either a fixed
 //! catalog token or the fixed prompt sentence — never user text — so `cmd.exe`
-//! only ever re-parses text Orion wrote itself.
+//! only ever re-parses text NextHarness wrote itself.
 
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};

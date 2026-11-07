@@ -1,4 +1,4 @@
-//! The command line: the only way a human talks to Orion.
+//! The command line: the only way a human talks to NextHarness.
 //!
 //! Every command is a thin shell around a library function. The rules that
 //! matter — never spending without a click, never driving an interactive
@@ -25,7 +25,7 @@ use crate::{cache, VERSION};
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "orion",
+    name = "next-harness",
     version = VERSION,
     about = "One coding task, relayed across the coding harnesses installed on this machine",
     disable_help_subcommand = true
@@ -53,7 +53,7 @@ enum Command {
         #[arg(long)]
         manual: bool,
     },
-    /// Continue the task already recorded in .orion/TASK.md
+    /// Continue the task already recorded in .next-harness/TASK.md
     Resume {
         /// Maximum number of harnesses to try
         #[arg(long, value_name = "N")]

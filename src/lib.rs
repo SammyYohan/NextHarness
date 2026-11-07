@@ -1,4 +1,4 @@
-//! Orion Relay: one coding task, relayed across the AI coding harnesses
+//! NextHarness: one coding task, relayed across the AI coding harnesses
 //! installed on this machine.
 //!
 //! The module map follows the relay itself: [`config`] reads the catalog,

@@ -18,7 +18,7 @@ fn default_version() -> u32 {
     1
 }
 
-/// One pause: a harness Orion must not start before `until`.
+/// One pause: a harness NextHarness must not start before `until`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Pause {
     /// Epoch seconds at which the harness may be tried again.
@@ -33,7 +33,7 @@ pub struct Pause {
     pub set_at: u64,
 }
 
-/// Everything Orion remembers between runs.
+/// Everything NextHarness remembers between runs.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct State {
     /// Schema version of the state file.

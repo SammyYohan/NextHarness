@@ -1,5 +1,5 @@
-//! Where Orion keeps its files: the per-user configuration directory (catalog
-//! overrides, persistent state) and the per-repository `.orion` directory
+//! Where NextHarness keeps its files: the per-user configuration directory (catalog
+//! overrides, persistent state) and the per-repository `.NextHarness` directory
 //! (task, handoff, per-attempt logs).
 
 use std::path::{Path, PathBuf};
@@ -15,12 +15,12 @@ pub struct Paths {
     pub profiles_dir: PathBuf,
     /// Persisted pauses.
     pub state_file: PathBuf,
-    /// Relay preferences written by `orion init`.
+    /// Relay preferences written by `NextHarness init`.
     pub config_file: PathBuf,
     /// Last detection run, so `status` and `init` stay instant.
     pub cache_file: PathBuf,
-    /// `<repo>/.orion`.
-    pub orion_dir: PathBuf,
+    /// `<repo>/.next-harness`.
+    pub next_harness_dir: PathBuf,
     /// The task handed to every harness.
     pub task_file: PathBuf,
     /// The relay document written before switching harnesses.
@@ -34,18 +34,18 @@ pub struct Paths {
 impl Paths {
     /// Build every path from a repository root and a configuration directory.
     pub fn under(root: &Path, config_dir: PathBuf) -> Self {
-        let orion_dir = root.join(".orion");
+        let next_harness_dir = root.join(".next-harness");
         Self {
             profiles_dir: config_dir.join("profiles.d"),
             state_file: config_dir.join("state.json"),
             config_file: config_dir.join("config.json"),
             cache_file: config_dir.join("detect-cache.json"),
-            task_file: orion_dir.join("TASK.md"),
-            handoff_file: orion_dir.join("HANDOFF.md"),
-            result_file: orion_dir.join("RESULT.md"),
-            runs_dir: orion_dir.join("runs"),
+            task_file: next_harness_dir.join("TASK.md"),
+            handoff_file: next_harness_dir.join("HANDOFF.md"),
+            result_file: next_harness_dir.join("RESULT.md"),
+            runs_dir: next_harness_dir.join("runs"),
             config_dir,
-            orion_dir,
+            next_harness_dir,
         }
     }
 
@@ -55,12 +55,12 @@ impl Paths {
     }
 }
 
-/// The per-user configuration directory, or `ORION_CONFIG_DIR` when set.
+/// The per-user configuration directory, or `NextHarness_CONFIG_DIR` when set.
 ///
 /// The environment variable is what tests and portable installs use; it is not a
 /// user-facing setting.
 pub fn config_dir() -> Result<PathBuf> {
-    if let Some(dir) = std::env::var_os("ORION_CONFIG_DIR") {
+    if let Some(dir) = std::env::var_os("NextHarness_CONFIG_DIR") {
         return Ok(PathBuf::from(dir));
     }
     directories::ProjectDirs::from("", "", "next-harness")

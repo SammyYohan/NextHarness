@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping. Orion Relay is deliberately small: a catalogue, a detector, a
+Thanks for helping. NextHarness Relay is deliberately small: a catalogue, a detector, a
 runner, a quota rule and a relay loop. Contributions that keep it that way are
 the easiest to merge.
 
@@ -65,7 +65,7 @@ verified = "unverified"        # official | third_party | unverified
 quota_ignores_exit_code = false
 ```
 
-- `mode = "interactive"` means a human drives it: Orion prepares the prompt and
+- `mode = "interactive"` means a human drives it: NextHarness prepares the prompt and
   never automates the interface.
 - `mode = "gui"` means it is only detected by name (`gui_keywords`).
 - `default_tier = "unknown"` is treated as **paid**: the user is asked before it
@@ -89,7 +89,7 @@ pauses a working harness, which is worse than a missed detection.
 - `tests/relay.rs` — the whole relay, using the repository's own fake harness.
 - `tests/cli.rs` — the binary as a user meets it.
 - `src/bin/fake_harness.rs` — the fixture all of the above use. It is never
-  shipped: the release workflow builds `--bin orion` only.
+  shipped: the release workflow builds `--bin NextHarness` only.
 
 Tests must never need a network, an account, real quota, or a dialog. If a test
 opens a window, it is a bug.
@@ -99,7 +99,7 @@ opens a window, it is a bug.
 The catalogue's `verified` column improves with real reports. Run:
 
 ```sh
-orion doctor --report
+NextHarness doctor --report
 ```
 
 and paste the result into a [test report](.github/ISSUE_TEMPLATE/test-report.md).

@@ -6,7 +6,7 @@
 //!
 //! Two details matter on Windows. Closing the slave side right after the spawn
 //! tears the console down and kills the child, and the console host waits for a
-//! cursor-position report before it starts forwarding the child's output. Orion
+//! cursor-position report before it starts forwarding the child's output. NextHarness
 //! is the terminal here, so it answers that query itself (see
 //! [`answer_cursor_query`]).
 
@@ -31,7 +31,7 @@ pub const DEFAULT_ABSOLUTE: Duration = Duration::from_secs(30 * 60);
 /// Timing budgets for one attempt.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Params {
-    /// How long Orion waits for new output before calling it a hang.
+    /// How long NextHarness waits for new output before calling it a hang.
     pub inactivity: Duration,
     /// Hard ceiling for the whole attempt.
     pub absolute: Duration,

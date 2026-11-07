@@ -1,6 +1,6 @@
 //! Small, dependency-free time helpers.
 //!
-//! Orion deliberately does not pull in a date/time crate: it only needs epoch
+//! NextHarness deliberately does not pull in a date/time crate: it only needs epoch
 //! seconds, a civil date in UTC and a human duration, all of which fit in a few
 //! lines. Hours are therefore reported in UTC, which the README states plainly.
 

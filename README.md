@@ -23,7 +23,7 @@ Every coding agent gives you a free allowance, and every free allowance runs out
 in the middle of a task. Switching by hand means re-reading the diff, retyping
 the request, and hoping the next tool understands where the last one stopped.
 
-Orion Relay does that handover. It starts your task with the first harness in
+NextHarness Relay does that handover. It starts your task with the first harness in
 your list, notices when a harness is out of quota, writes down what was done, and
 starts the next one on the same repair — with the same task file and the same
 working tree.
@@ -42,7 +42,7 @@ pretends to be one of the tools it drives.
 - [Configuration](#configuration)
 - [Compatibility](#compatibility)
 - [Honest limits](#honest-limits)
-- [What Orion does not do](#what-next-harness-does-not-do)
+- [What NextHarness does not do](#what-next-harness-does-not-do)
 - [Contributing](#contributing)
 - [Support](#support)
 
@@ -98,7 +98,7 @@ next-harness doctor                        # see the relay order and what is mis
 next-harness run "add a dark mode and tests"
 ```
 
-That is the whole loop. If the first harness runs out of quota, Orion pauses it,
+That is the whole loop. If the first harness runs out of quota, NextHarness pauses it,
 writes `.next-harness/HANDOFF.md`, and starts the next one. When everything is
 exhausted it asks: pay, wait for the reset, or stop.
 
@@ -128,7 +128,7 @@ on `run` and `resume`.
 ### Why a harness is paused
 
 A single line containing the word "quota" proves nothing — an agent may be
-writing about quota code. Orion only pauses when **two independent signals**
+writing about quota code. NextHarness only pauses when **two independent signals**
 agree:
 
 1. **A pattern** in the last 40 lines of output, **and**
@@ -147,13 +147,13 @@ the harness's own message (`resets in 2 hours`, `try again in 30 seconds`,
 - **A paid harness only starts after a click.** Any tier other than `free` —
   including `unknown` — needs an explicit answer, in a terminal (pay / wait /
   stop, with a bell) or in a native dialog.
-- **With no terminal and no desktop, Orion waits or stops. It never pays.**
-- **The interface of an interactive tool is never automated.** Orion copies the
+- **With no terminal and no desktop, NextHarness waits or stops. It never pays.**
+- **The interface of an interactive tool is never automated.** NextHarness copies the
   prompt to the clipboard, tells you what to do, and waits for `next-harness resume`.
 - **No telemetry.** Nothing is sent anywhere except what your harness already
   sends.
 - **Secrets are masked** in logs and in `HANDOFF.md`.
-- **One account per harness.** Orion never reads, copies or moves credentials.
+- **One account per harness.** NextHarness never reads, copies or moves credentials.
 - Pauses are persisted atomically: a crash cannot silently re-spend a quota.
 
 ### Configuration
@@ -204,7 +204,7 @@ community) or `unverified` (never tested on a real machine — please
 | Freebuff Desktop | `freebuff-desktop` | gui | free | unverified |
 | Cursor (editor) | `cursor-app` | gui | unknown | unverified |
 
-A `gui` entry is only ever detected by name: Orion opens no desktop application
+A `gui` entry is only ever detected by name: NextHarness opens no desktop application
 and drives no window.
 
 ### Honest limits
@@ -228,7 +228,7 @@ and drives no window.
   catalogue's `startup_grace_s`) and after 30 minutes in total. A stopped run is
   reported as *blocked*, never as *out of quota*.
 
-### What Orion does not do
+### What NextHarness does not do
 
 - It does not bypass quotas, rate limits, paywalls or logins.
 - It does not run a cheaper model behind your back.
@@ -244,7 +244,7 @@ are all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Support
 
-Orion Relay is MIT and stays free. If it saved you a subscription:
+NextHarness Relay is MIT and stays free. If it saved you a subscription:
 
 - [GitHub Sponsors](https://github.com/sponsors/<OWNER>)
 - [Ko-fi](https://ko-fi.com/<OWNER>)
@@ -264,7 +264,7 @@ Chaque agent de codage offre un quota gratuit, et chaque quota gratuit s'épuise
 au milieu d'une tâche. Changer à la main, c'est relire le diff, retaper la
 demande et espérer que l'outil suivant comprenne où le précédent s'est arrêté.
 
-Orion Relay fait cette passation. Il lance la tâche avec le premier harnais de
+NextHarness Relay fait cette passation. Il lance la tâche avec le premier harnais de
 votre liste, constate l'épuisement du quota, écrit ce qui a été fait, et démarre
 le suivant sur la même réparation — avec le même fichier de tâche et le même
 arbre de travail.
@@ -282,7 +282,7 @@ prétend jamais être l'un des outils qu'il pilote.
 - [Règles de sécurité](#règles-de-sécurité)
 - [Compatibilité](#compatibilité)
 - [Limites assumées](#limites-assumées)
-- [Ce qu'Orion ne fait pas](#ce-qunext-harness-ne-fait-pas)
+- [Ce qu'NextHarness ne fait pas](#ce-qunext-harness-ne-fait-pas)
 
 ### Fonctionnement
 
@@ -336,7 +336,7 @@ next-harness doctor                        # ordre de relais et ce qui manque
 next-harness run "ajoute un mode sombre et des tests"
 ```
 
-C'est toute la boucle. Si le premier harnais épuise son quota, Orion le met en
+C'est toute la boucle. Si le premier harnais épuise son quota, NextHarness le met en
 pause, écrit `.next-harness/HANDOFF.md` et démarre le suivant. Quand tout est épuisé, il
 demande : payer, attendre le reset, ou arrêter.
 
@@ -366,7 +366,7 @@ Options utiles : `--lang fr|en` sur toutes les commandes, `--max-relays <n>` et
 ### Pourquoi un harnais est mis en pause
 
 Une seule ligne contenant le mot « quota » ne prouve rien : un agent peut très
-bien écrire du code sur les quotas. Orion ne met en pause que lorsque **deux
+bien écrire du code sur les quotas. NextHarness ne met en pause que lorsque **deux
 signaux indépendants** concordent :
 
 1. **Un motif** dans les 40 dernières lignes de sortie, **et**
@@ -386,13 +386,13 @@ seconds`, `resets at 14:30`), sinon une pause d'une heure s'applique.
 - **Un harnais payant ne démarre qu'après un clic.** Toute catégorie autre que
   `free` — y compris `unknown` — exige une réponse explicite, dans un terminal
   (payer / attendre / arrêter, avec bip) ou dans une boîte de dialogue native.
-- **Sans terminal ni interface, Orion attend ou s'arrête. Il ne paie jamais.**
-- **L'interface d'un outil interactif n'est jamais automatisée.** Orion copie
+- **Sans terminal ni interface, NextHarness attend ou s'arrête. Il ne paie jamais.**
+- **L'interface d'un outil interactif n'est jamais automatisée.** NextHarness copie
   l'invite dans le presse-papiers, explique quoi faire et attend `next-harness resume`.
 - **Aucune télémétrie.** Rien n'est envoyé, hormis ce que votre harnais envoie
   déjà.
 - **Les secrets sont masqués** dans les journaux et dans `HANDOFF.md`.
-- **Un compte par harnais.** Orion ne lit, ne copie et ne déplace aucun
+- **Un compte par harnais.** NextHarness ne lit, ne copie et ne déplace aucun
   identifiant.
 - Les pauses sont écrites de façon atomique : un crash ne peut pas dépenser un
   quota en silence.
@@ -406,7 +406,7 @@ communauté) ou `unverified` (jamais testé sur une vraie machine — merci de
 
 Le tableau complet, avec les identifiants et la colonne « confiance », se trouve
 dans la [version anglaise](#compatibility). Une entrée `gui` n'est jamais
-qu'un nom détecté : Orion n'ouvre aucune application de bureau et ne pilote
+qu'un nom détecté : NextHarness n'ouvre aucune application de bureau et ne pilote
 aucune fenêtre.
 
 ### Limites assumées
@@ -431,7 +431,7 @@ aucune fenêtre.
   `startup_grace_s` du catalogue) et après 30 minutes au total. Un arrêt de ce
   type est signalé comme *bloqué*, jamais comme *quota épuisé*.
 
-### Ce qu'Orion ne fait pas
+### Ce qu'NextHarness ne fait pas
 
 - Il ne contourne ni les quotas, ni les limites de débit, ni les paywalls, ni les
   connexions.
@@ -448,7 +448,7 @@ non testée sont les bienvenus. Voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Soutien
 
-Orion Relay est sous MIT et reste gratuit. S'il vous a évité un abonnement :
+NextHarness Relay est sous MIT et reste gratuit. S'il vous a évité un abonnement :
 
 - [GitHub Sponsors](https://github.com/sponsors/<OWNER>)
 - [Ko-fi](https://ko-fi.com/<OWNER>)

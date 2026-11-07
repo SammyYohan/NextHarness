@@ -1,4 +1,4 @@
-//! The few git commands Orion needs: is this a repository, did the harness
+//! The few git commands NextHarness needs: is this a repository, did the harness
 //! change anything, and what changed.
 //!
 //! Every call is read-only and silent. A missing `git` binary is not an error:

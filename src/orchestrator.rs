@@ -45,7 +45,7 @@ impl Default for Settings {
 pub struct Session<'a> {
     /// The merged catalog.
     pub config: &'a Config,
-    /// Orion's files.
+    /// NextHarness's files.
     pub paths: &'a Paths,
     /// Detection results, in catalog order.
     pub detections: &'a [Detection],
@@ -64,7 +64,7 @@ pub struct Session<'a> {
 pub enum Conclusion {
     /// A harness finished the task.
     Finished,
-    /// A human-driven harness was prepared; Orion waits for `orion resume`.
+    /// A human-driven harness was prepared; NextHarness waits for `NextHarness resume`.
     Manual,
     /// Every candidate was paused, unusable, or declined.
     Exhausted,
@@ -303,7 +303,7 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
     })
 }
 
-/// Keep the transcript of one attempt in `.orion/runs`, masked and bounded.
+/// Keep the transcript of one attempt in `.NextHarness/runs`, masked and bounded.
 ///
 /// This is what makes a "blocked" or "out of quota" decision reviewable after
 /// the fact; it never contains a credential.

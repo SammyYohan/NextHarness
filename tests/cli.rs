@@ -27,10 +27,10 @@ fn invoke(dir: &TestDir, catalog: Option<&Path>, args: &[&str]) -> Output {
     command
         .args(args)
         .current_dir(dir.path())
-        .env("ORION_CONFIG_DIR", &config_dir);
+        .env("NextHarness_CONFIG_DIR", &config_dir);
     match catalog {
-        Some(path) => command.env("ORION_CATALOG", path),
-        None => command.env_remove("ORION_CATALOG"),
+        Some(path) => command.env("NextHarness_CATALOG", path),
+        None => command.env_remove("NextHarness_CATALOG"),
     };
 
     if let Ok(path) = std::env::var("PATH") {
@@ -42,14 +42,14 @@ fn invoke(dir: &TestDir, catalog: Option<&Path>, args: &[&str]) -> Output {
         .expect("join PATH");
         command.env("PATH", joined);
     }
-    command.output().expect("run orion")
+    command.output().expect("run next_harness")
 }
 
-fn orion(dir: &TestDir, args: &[&str]) -> Output {
+fn next_harness(dir: &TestDir, args: &[&str]) -> Output {
     invoke(dir, None, args)
 }
 
-fn orion_with_catalog(dir: &TestDir, catalog: &Path, args: &[&str]) -> Output {
+fn next_harness_with_catalog(dir: &TestDir, catalog: &Path, args: &[&str]) -> Output {
     invoke(dir, Some(catalog), args)
 }
 
@@ -82,7 +82,7 @@ fn entry(id: &str, name: &str, run: &str) -> String {
 #[test]
 fn the_doctor_report_is_pasteable_and_carries_no_account_name() {
     let dir = TestDir::new("cli-doctor");
-    let output = orion(&dir, &["doctor", "--report"]);
+    let output = next_harness(&dir, &["doctor", "--report"]);
     assert!(output.status.success(), "{}", text(&output));
 
     let report = String::from_utf8_lossy(&output.stdout).to_string();
@@ -106,7 +106,7 @@ fn the_doctor_report_is_pasteable_and_carries_no_account_name() {
 #[test]
 fn doctor_without_a_report_prints_the_relay_inventory() {
     let dir = TestDir::new("cli-doctor-text");
-    let output = orion(&dir, &["doctor"]);
+    let output = next_harness(&dir, &["doctor"]);
     assert!(output.status.success(), "{}", text(&output));
     let body = String::from_utf8_lossy(&output.stdout).to_string();
     assert!(body.contains("schema 1"), "{body}");
@@ -115,7 +115,7 @@ fn doctor_without_a_report_prints_the_relay_inventory() {
 #[test]
 fn config_shows_where_everything_lives() {
     let dir = TestDir::new("cli-config");
-    let output = orion(&dir, &["config"]);
+    let output = next_harness(&dir, &["config"]);
     assert!(output.status.success());
     let body = String::from_utf8_lossy(&output.stdout).to_string();
     assert!(body.contains("config"), "{body}");
@@ -125,7 +125,7 @@ fn config_shows_where_everything_lives() {
 #[test]
 fn status_says_when_nothing_is_paused() {
     let dir = TestDir::new("cli-status");
-    let output = orion(&dir, &["status"]);
+    let output = next_harness(&dir, &["status"]);
     assert!(output.status.success());
     let body = String::from_utf8_lossy(&output.stdout).to_string();
     assert!(!body.trim().is_empty());
@@ -143,15 +143,15 @@ fn a_run_relays_and_leaves_a_handoff() {
         ),
     );
 
-    let output = orion_with_catalog(&dir, &path, &["run", "rename the module"]);
+    let output = next_harness_with_catalog(&dir, &path, &["run", "rename the module"]);
     assert!(output.status.success(), "{}", text(&output));
 
-    let handoff = dir.path().join(".orion").join("HANDOFF.md");
+    let handoff = dir.path().join(".next_harness").join("HANDOFF.md");
     assert!(handoff.is_file(), "a handoff must be written on a relay");
     let body = std::fs::read_to_string(&handoff).expect("handoff");
     assert!(body.contains("rename the module"), "{body}");
 
-    let status = orion_with_catalog(&dir, &path, &["status"]);
+    let status = next_harness_with_catalog(&dir, &path, &["status"]);
     let text = String::from_utf8_lossy(&status.stdout).to_string();
     assert!(text.contains("First"), "status must show the pause: {text}");
     assert!(text.contains("quota"), "status must say why: {text}");
@@ -169,32 +169,32 @@ fn resume_uses_the_saved_task_and_switches_language() {
         ),
     );
 
-    let first = orion_with_catalog(&dir, &path, &["run", "improve the parser"]);
+    let first = next_harness_with_catalog(&dir, &path, &["run", "improve the parser"]);
     assert!(first.status.success(), "{}", text(&first));
 
-    let second = orion_with_catalog(&dir, &path, &["resume", "--lang", "fr"]);
+    let second = next_harness_with_catalog(&dir, &path, &["resume", "--lang", "fr"]);
     assert!(second.status.success(), "{}", text(&second));
 
     // The handoff prompt was used, so the previous attempt is not repeated.
     let body =
-        std::fs::read_to_string(dir.path().join(".orion").join("HANDOFF.md")).expect("handoff");
+        std::fs::read_to_string(dir.path().join(".next_harness").join("HANDOFF.md")).expect("handoff");
     assert!(body.contains("improve the parser"), "{body}");
 }
 
 #[test]
 fn resume_without_a_task_explains_what_to_do() {
     let dir = TestDir::new("cli-resume-missing");
-    let output = orion(&dir, &["resume"]);
+    let output = next_harness(&dir, &["resume"]);
     assert!(!output.status.success());
     let body = String::from_utf8_lossy(&output.stdout).to_string();
-    assert!(body.contains("orion run"), "{body}");
+    assert!(body.contains("next_harness run"), "{body}");
 }
 
 #[test]
 fn init_writes_the_preferences_file() {
     let dir = TestDir::new("cli-init");
     let path = catalog(&dir, &entry("only", "Only", "\"success\", \"{prompt}\""));
-    let output = orion_with_catalog(&dir, &path, &["init"]);
+    let output = next_harness_with_catalog(&dir, &path, &["init"]);
     assert!(output.status.success(), "{}", text(&output));
 
     let prefs = dir.path().join("config").join("config.json");
@@ -216,6 +216,6 @@ fn the_relay_limit_can_be_raised_from_the_command_line() {
         ),
     );
 
-    let output = orion_with_catalog(&dir, &path, &["run", "do it", "--max-relays", "3"]);
+    let output = next_harness_with_catalog(&dir, &path, &["run", "do it", "--max-relays", "3"]);
     assert!(output.status.success(), "{}", text(&output));
 }

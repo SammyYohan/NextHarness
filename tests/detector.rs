@@ -74,13 +74,13 @@ fn declared_credentials_are_required() {
     let bin = dir.join("bin");
     write_script(&bin, "fake-harness", &["1.2.3"], 0);
 
-    let body = format!("{HEADLESS}requires_env = [\"ORION_TEST_ABSENT_KEY\"]\n");
+    let body = format!("{HEADLESS}requires_env = [\"NextHarness_TEST_ABSENT_KEY\"]\n");
     let config = catalog(&body);
     let detector = Detector::with_roots(vec![bin], Vec::new());
     let detection = detector.detect(config.harness("fake").expect("harness"));
 
     assert_eq!(detection.status, Status::MissingKey);
-    assert!(detection.detail.contains("ORION_TEST_ABSENT_KEY"));
+    assert!(detection.detail.contains("NextHarness_TEST_ABSENT_KEY"));
 }
 
 #[test]
@@ -131,7 +131,7 @@ name = "TUI"
 mode = "interactive"
 binaries = ["fake-tui"]
 version_args = ["--version"]
-manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "official"
@@ -159,7 +159,7 @@ id = "app"
 name = "App"
 mode = "gui"
 gui_keywords = ["antigravity"]
-manual_prompt = "Read .orion/HANDOFF.md and continue the task."
+manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "unverified"

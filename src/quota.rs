@@ -47,7 +47,7 @@ impl Kind {
     }
 }
 
-/// What Orion should do with the verdict.
+/// What NextHarness should do with the verdict.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Effect {
     /// Confirmed: pause the harness and relay.
@@ -129,7 +129,7 @@ fn unit_seconds(unit: &str) -> Option<u64> {
 /// Parse a reset time out of the transcript: `resets in 2 hours`,
 /// `try again in 30 seconds`, `resets at 14:30`.
 ///
-/// Times of day are interpreted in UTC, which is what Orion displays.
+/// Times of day are interpreted in UTC, which is what NextHarness displays.
 pub fn parse_reset(patterns: &[String], text: &str, now: u64) -> Option<u64> {
     for pattern in patterns {
         let Ok(regex) = Regex::new(pattern) else {

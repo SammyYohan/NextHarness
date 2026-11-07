@@ -1,7 +1,7 @@
 //! A short-lived cache of the last detection, so `status`, `init` and `run` do
 //! not re-probe every binary each time.
 //!
-//! It expires on its own and `orion doctor --refresh` ignores it entirely: a
+//! It expires on its own and `next-harness doctor --refresh` ignores it entirely: a
 //! cache that outlives an installation would hide the harness the user just
 //! installed.
 

@@ -1,6 +1,6 @@
 ---
 name: Test report
-about: Tell us what Orion did on your machine
+about: Tell us what NextHarness did on your machine
 title: "[test] "
 labels: test-report
 ---
@@ -16,7 +16,7 @@ catalogue's `verified` column can only improve with real machines.
 
 - OS and version:
 - Shell / terminal:
-- Orion version (`orion --version`):
+- NextHarness version (`NextHarness --version`):
 
 ## Doctor report
 
@@ -24,7 +24,7 @@ Run this and paste the result **as is**. It contains no account name, no path
 with your user name and no credential:
 
 ```sh
-orion doctor --report
+NextHarness doctor --report
 ```
 
 ```markdown

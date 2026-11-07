@@ -50,7 +50,7 @@ impl TestDir {
 /// Write a fake harness: a `.cmd` shim on Windows, a shell script elsewhere.
 ///
 /// On Windows the shim cannot be executed directly, which is exactly the
-/// situation Orion has to handle for every npm-installed harness.
+/// situation NextHarness has to handle for every npm-installed harness.
 pub fn write_script(dir: &Path, name: &str, lines: &[&str], exit_code: i32) -> PathBuf {
     std::fs::create_dir_all(dir).expect("create the script directory");
     if cfg!(windows) {

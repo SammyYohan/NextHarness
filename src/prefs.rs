@@ -1,4 +1,4 @@
-//! Preferences written by `orion init` and shown by `orion config`.
+//! Preferences written by `NextHarness init` and shown by `NextHarness config`.
 //!
 //! They are deliberately tiny and separate from the catalog: the catalog
 //! describes harnesses, this file describes how this user wants the relay to

@@ -44,4 +44,4 @@ jobs:
         run: cargo test --all
 
       - name: Release build
-        run: cargo build --release --bin orion
+        run: cargo build --release --bin NextHarness

@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use thiserror::Error;
 
-/// Anything Orion can fail with.
+/// Anything NextHarness can fail with.
 #[derive(Debug, Error)]
 pub enum Error {
     /// A message meant for the user, already localised by the caller.

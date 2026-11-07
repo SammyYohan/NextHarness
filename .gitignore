@@ -1,8 +1,8 @@
 # Compiled binaries
 /target
 
-# Orion/NextHarness data directories (per-repo and per-user)
-.orion/
+# NextHarness/NextHarness data directories (per-repo and per-user)
+.NextHarness/
 .nextharness/
 
 # Temporary files
