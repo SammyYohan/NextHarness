@@ -146,7 +146,7 @@ fn a_run_relays_and_leaves_a_handoff() {
     let output = next_harness_with_catalog(&dir, &path, &["run", "rename the module"]);
     assert!(output.status.success(), "{}", text(&output));
 
-    let handoff = dir.path().join(".next_harness").join("HANDOFF.md");
+    let handoff = dir.path().join(".next-harness").join("HANDOFF.md");
     assert!(handoff.is_file(), "a handoff must be written on a relay");
     let body = std::fs::read_to_string(&handoff).expect("handoff");
     assert!(body.contains("rename the module"), "{body}");
@@ -177,7 +177,7 @@ fn resume_uses_the_saved_task_and_switches_language() {
 
     // The handoff prompt was used, so the previous attempt is not repeated.
     let body =
-        std::fs::read_to_string(dir.path().join(".next_harness").join("HANDOFF.md")).expect("handoff");
+        std::fs::read_to_string(dir.path().join(".next-harness").join("HANDOFF.md")).expect("handoff");
     assert!(body.contains("improve the parser"), "{body}");
 }
 
@@ -187,7 +187,7 @@ fn resume_without_a_task_explains_what_to_do() {
     let output = next_harness(&dir, &["resume"]);
     assert!(!output.status.success());
     let body = String::from_utf8_lossy(&output.stdout).to_string();
-    assert!(body.contains("next_harness run"), "{body}");
+    assert!(body.contains("next-harness run"), "{body}");
 }
 
 #[test]
