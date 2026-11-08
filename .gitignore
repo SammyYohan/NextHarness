@@ -1,9 +1,8 @@
 # Compiled binaries
 /target
 
-# NextHarness/NextHarness data directories (per-repo and per-user)
-.NextHarness/
-.nextharness/
+# next-harness working directory (per-repo: task, handoff, run logs)
+.next-harness/
 
 # Temporary files
 *.tmp

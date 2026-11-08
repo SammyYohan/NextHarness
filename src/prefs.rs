@@ -1,7 +1,7 @@
-//! Preferences written by `NextHarness init` and shown by `NextHarness config`.
+//! Preferences written by `next-harness init` and shown by `next-harness config`.
 //!
 //! They are deliberately tiny and separate from the catalog: the catalog
-//! describes harnesses, this file describes how this user wants the relay to
+//! describes harnesses, this file describes how this user wants a run to
 //! behave. A missing or corrupt file means "defaults", never a failed start.
 
 use std::fs;
@@ -11,35 +11,35 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{self, Result};
-use crate::orchestrator::DEFAULT_MAX_RELAYS;
+use crate::orchestrator::DEFAULT_MAX_ATTEMPTS;
 
 fn default_version() -> u32 {
     1
 }
 
-/// Relay behaviour for this user.
+/// Run behaviour for this user.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Preferences {
     /// Schema version of this file.
     #[serde(default = "default_version")]
     pub version: u32,
     /// Maximum number of harnesses one run may try.
-    #[serde(default = "default_relays")]
-    pub max_relays: usize,
+    #[serde(default = "default_max_attempts")]
+    pub max_attempts: usize,
     /// Whether human-driven harnesses may be prepared.
     #[serde(default)]
     pub manual: bool,
 }
 
-fn default_relays() -> usize {
-    DEFAULT_MAX_RELAYS
+fn default_max_attempts() -> usize {
+    DEFAULT_MAX_ATTEMPTS
 }
 
 impl Default for Preferences {
     fn default() -> Self {
         Self {
             version: default_version(),
-            max_relays: default_relays(),
+            max_attempts: default_max_attempts(),
             manual: false,
         }
     }
@@ -75,14 +75,14 @@ mod tests {
     fn a_missing_file_means_defaults() {
         let prefs = Preferences::load(Path::new("does/not/exist.json"));
         assert_eq!(prefs, Preferences::default());
-        assert_eq!(prefs.max_relays, DEFAULT_MAX_RELAYS);
+        assert_eq!(prefs.max_attempts, DEFAULT_MAX_ATTEMPTS);
         assert!(!prefs.manual);
     }
 
     #[test]
     fn a_partial_file_keeps_the_defaults_for_missing_fields() {
         let prefs: Preferences = serde_json::from_str(r#"{ "manual": true }"#).expect("parse");
-        assert_eq!(prefs.max_relays, DEFAULT_MAX_RELAYS);
+        assert_eq!(prefs.max_attempts, DEFAULT_MAX_ATTEMPTS);
         assert!(prefs.manual);
     }
 }

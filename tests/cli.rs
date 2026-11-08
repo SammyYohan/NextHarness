@@ -31,10 +31,10 @@ fn invoke(dir: &TestDir, catalog: Option<&Path>, args: &[&str]) -> Output {
     command
         .args(args)
         .current_dir(dir.path())
-        .env("NextHarness_CONFIG_DIR", &config_dir);
+        .env("NEXTHARNESS_CONFIG_DIR", &config_dir);
     match catalog {
-        Some(path) => command.env("NextHarness_CATALOG", path),
-        None => command.env_remove("NextHarness_CATALOG"),
+        Some(path) => command.env("NEXTHARNESS_CATALOG", path),
+        None => command.env_remove("NEXTHARNESS_CATALOG"),
     };
 
     if let Ok(path) = std::env::var("PATH") {
@@ -46,7 +46,7 @@ fn invoke(dir: &TestDir, catalog: Option<&Path>, args: &[&str]) -> Output {
         .expect("join PATH");
         command.env("PATH", joined);
     }
-    command.output().expect("run next_harness")
+    command.output().expect("run next-harness")
 }
 
 fn next_harness(dir: &TestDir, args: &[&str]) -> Output {
@@ -108,7 +108,7 @@ fn the_doctor_report_is_pasteable_and_carries_no_account_name() {
 }
 
 #[test]
-fn doctor_without_a_report_prints_the_relay_inventory() {
+fn doctor_without_a_report_prints_the_harness_inventory() {
     let dir = TestDir::new("cli-doctor-text");
     let output = next_harness(&dir, &["doctor"]);
     assert!(output.status.success(), "{}", text(&output));
@@ -136,7 +136,7 @@ fn status_says_when_nothing_is_paused() {
 }
 
 #[test]
-fn a_run_relays_and_leaves_a_handoff() {
+fn a_run_hands_off_and_leaves_a_handoff() {
     let dir = TestDir::new("cli-run");
     let path = catalog(
         &dir,
@@ -151,7 +151,10 @@ fn a_run_relays_and_leaves_a_handoff() {
     assert!(output.status.success(), "{}", text(&output));
 
     let handoff = dir.path().join(".next-harness").join("HANDOFF.md");
-    assert!(handoff.is_file(), "a handoff must be written on a relay");
+    assert!(
+        handoff.is_file(),
+        "a handoff must be written when a harness is out of quota"
+    );
     let body = std::fs::read_to_string(&handoff).expect("handoff");
     assert!(body.contains("rename the module"), "{body}");
 
@@ -204,11 +207,11 @@ fn init_writes_the_preferences_file() {
     let prefs = dir.path().join("config").join("config.json");
     assert!(prefs.is_file(), "init must write its preferences");
     let body = std::fs::read_to_string(&prefs).expect("prefs");
-    assert!(body.contains("max_relays"), "{body}");
+    assert!(body.contains("max_attempts"), "{body}");
 }
 
 #[test]
-fn the_relay_limit_can_be_raised_from_the_command_line() {
+fn the_attempt_limit_can_be_raised_from_the_command_line() {
     let dir = TestDir::new("cli-limit");
     let path = catalog(
         &dir,
@@ -220,6 +223,6 @@ fn the_relay_limit_can_be_raised_from_the_command_line() {
         ),
     );
 
-    let output = next_harness_with_catalog(&dir, &path, &["run", "do it", "--max-relays", "3"]);
+    let output = next_harness_with_catalog(&dir, &path, &["run", "do it", "--max-attempts", "3"]);
     assert!(output.status.success(), "{}", text(&output));
 }

@@ -16,7 +16,7 @@ catalogue's `verified` column can only improve with real machines.
 
 - OS and version:
 - Shell / terminal:
-- NextHarness version (`NextHarness --version`):
+- next-harness version (`next-harness --version`):
 
 ## Doctor report
 
@@ -24,7 +24,7 @@ Run this and paste the result **as is**. It contains no account name, no path
 with your user name and no credential:
 
 ```sh
-NextHarness doctor --report
+next-harness doctor --report
 ```
 
 ```markdown

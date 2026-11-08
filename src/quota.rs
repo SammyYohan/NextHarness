@@ -50,7 +50,7 @@ impl Kind {
 /// What NextHarness should do with the verdict.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Effect {
-    /// Confirmed: pause the harness and relay.
+    /// Confirmed: pause the harness and hand off.
     Pause,
     /// Possible: ask the human instead of guessing.
     OpenWindow,

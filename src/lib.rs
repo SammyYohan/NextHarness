@@ -1,9 +1,9 @@
-//! NextHarness: one coding task, relayed across the AI coding harnesses
-//! installed on this machine.
+//! NextHarness: one coding task, handed to the next AI coding harness whenever
+//! the current one runs out of free quota.
 //!
-//! The module map follows the relay itself: [`config`] reads the catalog,
-//! [`detector`] finds what is installed, [`runner`] starts one harness,
-//! [`quota`] decides whether it ran out, [`orchestrator`] moves to the next one.
+//! The module map follows one task through its life: [`config`] reads the
+//! catalog, [`detector`] finds what is installed, [`runner`] starts one harness,
+//! [`quota`] decides whether it ran out, [`orchestrator`] hands the task over.
 
 rust_i18n::i18n!("locales", fallback = "en");
 

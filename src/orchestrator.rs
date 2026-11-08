@@ -1,5 +1,6 @@
-//! The relay: walk the catalog in file order, start one harness, decide what its
-//! exit means, and move to the next one when the free quota is gone.
+//! The per-task loop: walk the catalog in file order, start one harness, decide
+//! what its exit means, and hand the task to the next one when the free quota
+//! is gone.
 //!
 //! Nothing here decides on a single signal. A harness is only paused when
 //! [`crate::quota::classify`] confirms it, and a paid harness is only started
@@ -21,13 +22,13 @@ use crate::state::State;
 use crate::timefmt::{format_duration, format_utc, now_epoch};
 
 /// How many harnesses one run may try when nothing says otherwise.
-pub const DEFAULT_MAX_RELAYS: usize = 3;
+pub const DEFAULT_MAX_ATTEMPTS: usize = 3;
 
 /// What this run is allowed to do.
 #[derive(Debug, Clone)]
 pub struct Settings {
     /// Maximum number of harnesses tried in one run.
-    pub max_relays: usize,
+    pub max_attempts: usize,
     /// Whether human-driven harnesses may be prepared.
     pub manual: bool,
 }
@@ -35,7 +36,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            max_relays: DEFAULT_MAX_RELAYS,
+            max_attempts: DEFAULT_MAX_ATTEMPTS,
             manual: false,
         }
     }
@@ -64,7 +65,7 @@ pub struct Session<'a> {
 pub enum Conclusion {
     /// A harness finished the task.
     Finished,
-    /// A human-driven harness was prepared; NextHarness waits for `NextHarness resume`.
+    /// A human-driven harness was prepared; NextHarness waits for `next-harness resume`.
     Manual,
     /// Every candidate was paused, unusable, or declined.
     Exhausted,
@@ -83,7 +84,7 @@ pub struct Attempt {
     pub note: String,
 }
 
-/// The result of one relay run.
+/// The result of one run.
 #[derive(Debug, Clone)]
 pub struct Report {
     /// How it ended.
@@ -104,13 +105,13 @@ impl Report {
     }
 }
 
-/// Run the relay once.
+/// Run the handoff loop once.
 pub fn run(session: &Session, state: &mut State) -> Result<Report> {
     handoff::write_task(session.paths, session.task)?;
     state.prune(now_epoch());
 
     let resuming = session.paths.handoff_file.is_file();
-    let limit = session.settings.max_relays.max(1);
+    let limit = session.settings.max_attempts.max(1);
     let mut attempts: Vec<Attempt> = Vec::new();
 
     for id in session.config.ids() {
@@ -303,7 +304,7 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
     })
 }
 
-/// Keep the transcript of one attempt in `.NextHarness/runs`, masked and bounded.
+/// Keep the transcript of one attempt in `.next-harness/runs`, masked and bounded.
 ///
 /// This is what makes a "blocked" or "out of quota" decision reviewable after
 /// the fact; it never contains a credential.

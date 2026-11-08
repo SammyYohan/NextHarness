@@ -1,5 +1,5 @@
 //! A fake harness, shipped with the repository so the test suite can exercise
-//! the relay without network access, accounts or quota.
+//! the handoff loop without network access, accounts or quota.
 //!
 //! It is only ever built as a test fixture and is excluded from release
 //! artefacts.

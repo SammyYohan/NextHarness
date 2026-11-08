@@ -206,7 +206,7 @@ pub fn run(binary: &Path, args: &[String], cwd: &Path, params: &Params) -> Resul
     let duration = started.elapsed();
 
     // The reader stops on its own when the console closes. It is not joined: a
-    // console host that outlives its child would otherwise hang the relay.
+    // console host that outlives its child would otherwise hang the runner.
     drop(reader_thread);
     drop(writer);
     drop(pair.master);
@@ -250,7 +250,7 @@ fn has_words(chunk: &[u8]) -> bool {
 ///
 /// A terminal emulator answers with `ESC[<row>;<col>R`; without that answer the
 /// Windows console host stops forwarding the child's output, so the harness
-/// looks silent and the relay times it out. The report may be split across two
+/// looks silent and the orchestrator times it out. The report may be split across two
 /// reads, hence `pending`.
 fn answer_cursor_query<W: std::io::Write>(writer: &mut W, chunk: &[u8], pending: &mut Vec<u8>) {
     const QUERY: &[u8] = b"\x1b[6n";

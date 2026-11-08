@@ -4,8 +4,8 @@
 
 **One coding task. Every AI coding harness you already have. No quota wasted.**
 
-[![CI](https://github.com/SammyYohan/next-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/SammyYohan/next-harness/actions/workflows/ci.yml)
-[![release](https://img.shields.io/github/v/release/SammyYohan/next-harness?include_prereleases)](https://github.com/SammyYohan/next-harness/releases)
+[![CI](https://github.com/SammyYohan/NextHarness/actions/workflows/ci.yml/badge.svg)](https://github.com/SammyYohan/NextHarness/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/SammyYohan/NextHarness?include_prereleases)](https://github.com/SammyYohan/NextHarness/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
 
@@ -23,7 +23,7 @@ Every coding agent gives you a free allowance, and every free allowance runs out
 in the middle of a task. Switching by hand means re-reading the diff, retyping
 the request, and hoping the next tool understands where the last one stopped.
 
-NextHarness Relay does that handover. It starts your task with the first harness in
+NextHarness does that handoff. It starts your task with the first harness in
 your list, notices when a harness is out of quota, writes down what was done, and
 starts the next one on the same task — with the same task file and the same
 working tree.
@@ -68,19 +68,34 @@ pretends to be one of the tools it drives.
                               gatekeeper: pay now / wait for reset / stop
 ```
 
-Detection, the quota decision and the handover are all local. The only network
+Detection, the quota decision and the handoff are all local. The only network
 traffic is the one your harness already makes.
 
 ### Install
 
+**One command** — download the latest release, verify its checksum, install it on
+your `PATH`.
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS and Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
 **Prebuilt binary** — download the archive for your platform from
-[Releases](https://github.com/SammyYohan/next-harness/releases), verify the
+[Releases](https://github.com/SammyYohan/NextHarness/releases), verify the
 `.sha256` next to it, and put `next-harness` on your `PATH`.
 
 **From source** — you need Rust 1.85 or newer:
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 On Linux the build needs the GTK and XDo headers, because the pay prompt is a
@@ -95,7 +110,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/my-project
 next-harness init                          # detect what is installed, write defaults
-next-harness doctor                        # see the relay order and what is missing
+next-harness doctor                        # see the handoff order and what is missing
 next-harness run "add a dark mode and tests"
 ```
 
@@ -116,14 +131,14 @@ Every run leaves its trail in the repository:
 
 | Command | What it does |
 |---|---|
-| `next-harness init` | Detect installed harnesses, print the relay order, write `config.json` |
-| `next-harness run "<task>"` | Run a task, relaying on quota |
+| `next-harness init` | Detect installed harnesses, print the handoff order, write `config.json` |
+| `next-harness run "<task>"` | Run a task, handing off on quota |
 | `next-harness resume` | Continue the task already in `.next-harness/TASK.md` |
 | `next-harness status` | Which harnesses are paused, and until when |
 | `next-harness doctor [--refresh] [--report]` | Inventory; `--report` prints pasteable Markdown |
 | `next-harness config` | Where the configuration and state live |
 
-Useful flags: `--lang fr|en|es|de|it|pt|zh|ja` on any command, `--max-relays <n>` and `--manual` on `run` and `resume`.
+Useful flags: `--lang fr|en|es|de|it|pt|zh|ja` on any command, `--max-attempts <n>` and `--manual` on `run` and `resume`.
 
 ### Why a harness is paused
 
@@ -160,7 +175,7 @@ the harness's own message (`resets in 2 hours`, `try again in 30 seconds`,
 - `profiles/builtin.toml` is the catalogue, compiled into the binary.
 - Override it without recompiling: drop `*.toml` files in
   `<config_dir>/profiles.d/`. They are patches applied by harness `id`.
-- `<config_dir>/config.json` holds `max_relays` and `manual`, written by
+- `<config_dir>/config.json` holds `max_attempts` and `manual`, written by
   `next-harness init` and shown by `next-harness config`.
 - `<config_dir>/state.json` holds the pauses.
 
@@ -261,7 +276,7 @@ are all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Support
 
-NextHarness Relay is MIT and stays free. If it saved you a subscription:
+NextHarness is MIT and stays free. If it saved you a subscription:
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -281,7 +296,7 @@ Chaque agent de codage offre un quota gratuit, et chaque quota gratuit s'épuise
 au milieu d'une tâche. Changer à la main, c'est relire le diff, retaper la
 demande et espérer que l'outil suivant comprenne où le précédent s'est arrêté.
 
-NextHarness Relay fait cette passation. Il lance la tâche avec le premier harnais de
+NextHarness fait cette passation. Il lance la tâche avec le premier harnais de
 votre liste, constate l'épuisement du quota, écrit ce qui a été fait, et démarre
 le suivant sur la même réparation — avec le même fichier de tâche et le même
 arbre de travail.
@@ -301,7 +316,7 @@ prétend jamais être l'un des outils qu'il pilote.
 - [Langues](#langues)
 - [Compatibilité](#compatibilité)
 - [Limites assumées](#limites-assumées)
-- [Ce qu'NextHarness ne fait pas](#ce-qunext-harness-ne-fait-pas)
+- [Ce que NextHarness ne fait pas](#ce-que-nextharness-ne-fait-pas)
 - [Contribuer](#contribuer)
 - [Soutien](#soutien)
 
@@ -331,14 +346,29 @@ réseau est celui que votre harnais fait déjà.
 
 ### Installation
 
+**Une commande** — télécharge la dernière version, vérifie son checksum SHA-256 et
+l'installe dans votre `PATH`.
+
+Windows (PowerShell) :
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS et Linux :
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
 **Binaire prêt à l'emploi** — téléchargez l'archive de votre plateforme depuis
-les [Releases](https://github.com/SammyYohan/next-harness/releases), vérifiez le
+les [Releases](https://github.com/SammyYohan/NextHarness/releases), vérifiez le
 `.sha256` à côté, puis placez `next-harness` dans votre `PATH`.
 
 **Depuis les sources** — Rust 1.85 minimum :
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 Sous Linux, la compilation demande les en-têtes GTK et XDo (la question « payer »
@@ -353,7 +383,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/mon-projet
 next-harness init                          # détecte l'installé, écrit les réglages
-next-harness doctor                        # ordre de relais et ce qui manque
+next-harness doctor                        # ordre de passation et ce qui manque
 next-harness run "ajoute un mode sombre et des tests"
 ```
 
@@ -374,14 +404,14 @@ Chaque exécution laisse sa trace dans le dépôt :
 
 | Commande | Effet |
 |---|---|
-| `next-harness init` | Détecte les harnais installés, affiche l'ordre de relais, écrit `config.json` |
-| `next-harness run "<tâche>"` | Lance une tâche, avec relais sur quota |
+| `next-harness init` | Détecte les harnais installés, affiche l'ordre de passation, écrit `config.json` |
+| `next-harness run "<tâche>"` | Lance une tâche, avec passation sur quota |
 | `next-harness resume` | Reprend la tâche déjà présente dans `.next-harness/TASK.md` |
 | `next-harness status` | Quels harnais sont en pause, et jusqu'à quand |
 | `next-harness doctor [--refresh] [--report]` | Inventaire ; `--report` produit du Markdown collable |
 | `next-harness config` | Où vivent la configuration et l'état |
 
-Options utiles : `--lang fr|en` sur toutes les commandes, `--max-relays <n>` et
+Options utiles : `--lang fr|en|es|de|it|pt|zh|ja` sur toutes les commandes, `--max-attempts <n>` et
 `--manual` sur `run` et `resume`.
 
 ### Pourquoi un harnais est mis en pause
@@ -423,7 +453,7 @@ seconds`, `resets at 14:30`), sinon une pause d'une heure s'applique.
 - `profiles/builtin.toml` est le catalogue, compilé dans le binaire.
 - Remplacez-le sans recompiler : déposez des fichiers `*.toml` dans
   `<config_dir>/profiles.d/`. Ce sont des correctifs appliqués par `id` de harnais.
-- `<config_dir>/config.json` contient `max_relays` et `manual`, écrits par
+- `<config_dir>/config.json` contient `max_attempts` et `manual`, écrits par
   `next-harness init` et affichés par `next-harness config`.
 - `<config_dir>/state.json` contient les pauses.
 
@@ -481,7 +511,7 @@ application de bureau et ne pilote aucune fenêtre.
   `startup_grace_s` du catalogue) et après 30 minutes au total. Un arrêt de ce
   type est signalé comme *bloqué*, jamais comme *quota épuisé*.
 
-### Ce qu'NextHarness ne fait pas
+### Ce que NextHarness ne fait pas
 
 - Il ne contourne ni les quotas, ni les limites de débit, ni les paywalls, ni les
   connexions.
@@ -498,7 +528,7 @@ non testée sont les bienvenus. Voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Soutien
 
-NextHarness Relay est sous MIT et reste gratuit. S'il vous a évité un abonnement :
+NextHarness est sous MIT et reste gratuit. S'il vous a évité un abonnement :
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -518,7 +548,7 @@ Cada agente de programación te da una cuota gratuita, y cada cuota gratuita se 
 en medio de una tarea. Cambiar manualmente implica volver a leer el diff, volver a escribir
 la solicitud y esperar que la siguiente herramienta entienda dónde se quedó la anterior.
 
-NextHarness Relay hace ese traspaso. Inicia tu tarea con el primer harness de tu
+NextHarness hace ese traspaso. Inicia tu tarea con el primer harness de tu
 lista, se da cuenta cuando un harness se queda sin cuota, anota lo que se hizo e
 inicia el siguiente en la misma tarea — con el mismo archivo de tarea y el mismo
 árbol de trabajo.
@@ -568,14 +598,29 @@ de red es el que ya hace tu harness.
 
 ### Instalación
 
+**Un comando** — descarga la última versión, verifica su checksum SHA-256 y lo
+instala en tu `PATH`.
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS y Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
 **Binario precompilado** — descarga el archivo para tu plataforma desde
-[Releases](https://github.com/SammyYohan/next-harness/releases), verifica el
+[Releases](https://github.com/SammyYohan/NextHarness/releases), verifica el
 `.sha256` junto a él, y coloca `next-harness` en tu `PATH`.
 
 **Desde el código fuente** — necesitas Rust 1.85 o superior:
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 En Linux la compilación necesita los encabezados GTK y XDo, porque el aviso de pago es un
@@ -590,7 +635,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/mi-proyecto
 next-harness init                          # detecta lo instalado, escribe valores por defecto
-next-harness doctor                        # ve el orden de relevo y qué falta
+next-harness doctor                        # ve el orden de traspaso y qué falta
 next-harness run "añadir modo oscuro y pruebas"
 ```
 
@@ -611,14 +656,14 @@ Cada ejecución deja su rastro en el repositorio:
 
 | Comando | Qué hace |
 |---|---|
-| `next-harness init` | Detecta harnesses instalados, imprime el orden de relevo, escribe `config.json` |
+| `next-harness init` | Detecta harnesses instalados, imprime el orden de traspaso, escribe `config.json` |
 | `next-harness run "<tarea>"` | Ejecuta una tarea, relevando por cuota |
 | `next-harness resume` | Continúa la tarea ya en `.next-harness/TASK.md` |
 | `next-harness status` | Qué harnesses están pausados, y hasta cuándo |
 | `next-harness doctor [--refresh] [--report]` | Inventario; `--report` imprime Markdown pegable |
 | `next-harness config` | Dónde viven la configuración y el estado |
 
-Banderas útiles: `--lang es|en|fr|de|it|pt|zh|ja` en cualquier comando, `--max-relays <n>` y `--manual` en `run` y `resume`.
+Banderas útiles: `--lang es|en|fr|de|it|pt|zh|ja` en cualquier comando, `--max-attempts <n>` y `--manual` en `run` y `resume`.
 
 ### Por qué se pausa un harness
 
@@ -655,7 +700,7 @@ del mensaje del propio harness (`resets in 2 hours`, `try again in 30 seconds`,
 - `profiles/builtin.toml` es el catálogo, compilado en el binario.
 - Sobrescríbalo sin recompilar: coloca archivos `*.toml` en
   `<config_dir>/profiles.d/`. Son parches aplicados por `id` del harness.
-- `<config_dir>/config.json` almacena `max_relays` y `manual`, escritos por
+- `<config_dir>/config.json` almacena `max_attempts` y `manual`, escritos por
   `next-harness init` y mostrados por `next-harness config`.
 - `<config_dir>/state.json` almacena las pausas.
 
@@ -727,7 +772,7 @@ son bienvenidos. Consulta [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Soporte
 
-NextHarness Relay es MIT y sigue siendo gratuito. Si te ahorró una suscripción:
+NextHarness es MIT y sigue siendo gratuito. Si te ahorró una suscripción:
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -747,7 +792,7 @@ Jeder Coding-Agent gibt Ihnen ein kostenloses Kontingent, und jedes kostenlose K
 inmitten einer Aufgabe ab. Der manuelle Wechsel bedeutet, den Diff erneut zu lesen, die
 Anfrage neu einzutippen und zu hoffen, dass das nächste Tool versteht, wo das letzte aufgehört hat.
 
-NextHarness Relay übernimmt diese Übergabe. Es startet Ihre Aufgabe mit dem ersten Harness in
+NextHarness übernimmt diese Übergabe. Es startet Ihre Aufgabe mit dem ersten Harness in
 Ihrer Liste, bemerkt, wenn ein Harness ohne Kontingent ist, notiert, was getan wurde, und
 startet das nächste bei derselben Aufgabe — mit derselben Aufgaben-Datei und demselben
 Arbeitsbaum.
@@ -797,14 +842,29 @@ Netzwerkverkehr ist der, den Ihr Harness bereits erzeugt.
 
 ### Installation
 
+**Ein Befehl** — lädt die neueste Version herunter, prüft ihre SHA-256-Prüfsumme
+und installiert sie auf Ihren `PATH`.
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS und Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
 **Vorgekompilierte Binärdatei** — laden Sie das Archiv für Ihre Plattform von
-[Releases](https://github.com/SammyYohan/next-harness/releases) herunter, verifizieren Sie die
+[Releases](https://github.com/SammyYohan/NextHarness/releases) herunter, verifizieren Sie die
 `.sha256` daneben, und legen Sie `next-harness` auf Ihren `PATH`.
 
 **Aus dem Quellcode** — Sie benötigen Rust 1.85 oder neuer:
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 Unter Linux werden die GTK- und XDo-Header benötigt, weil die Zahlungsaufforderung ein
@@ -847,7 +907,7 @@ Jeder Lauf hinterlässt seine Spuren im Repository:
 | `next-harness doctor [--refresh] [--report]` | Inventur; `--report` gibt kopierbares Markdown aus |
 | `next-harness config` | Wo Konfiguration und Zustand gespeichert sind |
 
-Nützliche Flags: `--lang de|en|fr|es|it|pt|zh|ja` bei jedem Befehl, `--max-relays <n>` und `--manual` bei `run` und `resume`.
+Nützliche Flags: `--lang de|en|fr|es|it|pt|zh|ja` bei jedem Befehl, `--max-attempts <n>` und `--manual` bei `run` und `resume`.
 
 ### Warum ein Harness pausiert wird
 
@@ -885,7 +945,7 @@ der eigenen Nachricht des Harnesses übernommen (`resets in 2 hours`, `try again
 - `profiles/builtin.toml` ist der Katalog, kompiliert in die Binärdatei.
 - Überschreiben Sie ihn ohne Neukompilierung: legen Sie `*.toml`-Dateien in
   `<config_dir>/profiles.d/`. Sie sind Patches, die nach Harness-`id` angewendet werden.
-- `<config_dir>/config.json` enthält `max_relays` und `manual`, geschrieben von
+- `<config_dir>/config.json` enthält `max_attempts` und `manual`, geschrieben von
   `next-harness init` und angezeigt von `next-harness config`.
 - `<config_dir>/state.json` enthält die Pausen.
 
@@ -957,7 +1017,7 @@ sind willkommen. Siehe [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Support
 
-NextHarness Relay ist MIT und bleibt kostenlos. Wenn es Ihnen ein Abo erspart hat:
+NextHarness ist MIT und bleibt kostenlos. Wenn es Ihnen ein Abo erspart hat:
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -977,7 +1037,7 @@ Ogni agente di programmazione ti concede una quota gratuita, e ogni quota gratui
 a metà di un compito. Cambiare manualmente significa rileggere il diff, riscrivere
 la richiesta e sperare che il prossimo strumento capisca dove si è fermato il precedente.
 
-NextHarness Relay gestisce questo passaggio. Inizia il tuo compito con il primo harness nella
+NextHarness gestisce questo passaggio. Inizia il tuo compito con il primo harness nella
 tua lista, si accorge quando un harness è senza quota, registra cosa è stato fatto e
 avvia il successivo nello stesso compito — con lo stesso file di compito e lo stesso
 albero di lavoro.
@@ -1027,14 +1087,29 @@ di rete è quello già effettuato dal tuo harness.
 
 ### Installazione
 
+**Un comando** — scarica l'ultima versione, ne verifica il checksum SHA-256 e la
+installa nel tuo `PATH`.
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS e Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
 **Binario precompilato** — scarica l'archivio per la tua piattaforma da
-[Releases](https://github.com/SammyYohan/next-harness/releases), verifica il
+[Releases](https://github.com/SammyYohan/NextHarness/releases), verifica il
 `.sha256` accanto e metti `next-harness` nel tuo `PATH`.
 
 **Da sorgente** — serve Rust 1.85 o più recente:
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 Su Linux la compilazione richiede le intestazioni GTK e XDo, perché il prompt di pagamento è una
@@ -1049,7 +1124,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/mio-progetto
 next-harness init                          # rileva ciò che è installato, scrive i valori predefiniti
-next-harness doctor                        # vedi l'ordine di relay e cosa manca
+next-harness doctor                        # vedi l'ordine di passaggio e cosa manca
 next-harness run "aggiungi modalità scura e test"
 ```
 
@@ -1070,14 +1145,14 @@ Ogni esecuzione lascia le sue tracce nel repository:
 
 | Comando | Cosa fa |
 |---|---|
-| `next-harness init` | Rileva harness installati, stampa l'ordine di relay, scrive `config.json` |
-| `next-harness run "<compito>"` | Esegue un compito, con relay su quota |
+| `next-harness init` | Rileva harness installati, stampa l'ordine di passaggio, scrive `config.json` |
+| `next-harness run "<compito>"` | Esegue un compito, con passaggio su quota |
 | `next-harness resume` | Continua il compito già in `.next-harness/TASK.md` |
 | `next-harness status` | Quali harness sono in pausa e fino a quando |
 | `next-harness doctor [--refresh] [--report]` | Inventario; `--report` stampa Markdown incollabile |
 | `next-harness config` | Dove vivono configurazione e stato |
 
-Flag utili: `--lang it|en|fr|es|de|pt|zh|ja` su qualsiasi comando, `--max-relays <n>` e `--manual` su `run` e `resume`.
+Flag utili: `--lang it|en|fr|es|de|pt|zh|ja` su qualsiasi comando, `--max-attempts <n>` e `--manual` su `run` e `resume`.
 
 ### Perché un harness viene messo in pausa
 
@@ -1114,7 +1189,7 @@ preso dal messaggio dell'harness stesso (`resets in 2 hours`, `try again in 30 s
 - `profiles/builtin.toml` è il catalogo, compilato nel binario.
 - Sovrascrivilo senza ricompilare: inserisci file `*.toml` in
   `<config_dir>/profiles.d/`. Sono patch applicati per `id` dell'harness.
-- `<config_dir>/config.json` contiene `max_relays` e `manual`, scritti da
+- `<config_dir>/config.json` contiene `max_attempts` e `manual`, scritti da
   `next-harness init` e mostrati da `next-harness config`.
 - `<config_dir>/state.json` contiene le pause.
 
@@ -1186,7 +1261,7 @@ sono i benvenuti. Vedi [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Supporto
 
-NextHarness Relay è MIT e resta gratuito. Se ti ha fatto risparmiare un abbonamento:
+NextHarness è MIT e resta gratuito. Se ti ha fatto risparmiare un abbonamento:
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -1206,7 +1281,7 @@ Cada agente de programação te dá uma cota gratuita, e cada cota gratuita se e
 no meio de uma tarefa. Trocar manualmente significa reler o diff, digitar a
 solicitação novamente e esperar que a próxima ferramenta entenda onde a anterior parou.
 
-NextHarness Relay faz essa transferência. Inicia sua tarefa com o primeiro harness da sua
+NextHarness faz essa transferência. Inicia sua tarefa com o primeiro harness da sua
 lista, percebe quando um harness está sem cota, anota o que foi feito e
 inicia o próximo na mesma tarefa — com o mesmo arquivo de tarefa e a mesma
 árvore de trabalho.
@@ -1256,14 +1331,29 @@ de rede é aquele que seu harness já faz.
 
 ### Instalação
 
+**Um comando** — baixa a versão mais recente, verifica o checksum SHA-256 e o
+instala no seu `PATH`.
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS e Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
 **Binário pré-compilado** — baixe o arquivo para sua plataforma em
-[Releases](https://github.com/SammyYohan/next-harness/releases), verifique o
+[Releases](https://github.com/SammyYohan/NextHarness/releases), verifique o
 `.sha256` ao lado e coloque `next-harness` no seu `PATH`.
 
 **A partir do código-fonte** — você precisa do Rust 1.85 ou superior:
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 No Linux a compilação precisa dos cabeçalhos GTK e XDo, porque o aviso de pagamento é um
@@ -1278,7 +1368,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/meu-projeto
 next-harness init                          # detecta o que está instalado, escreve padrões
-next-harness doctor                        # veja a ordem de relevo e o que falta
+next-harness doctor                        # veja a ordem de transferência e o que falta
 next-harness run "adicionar modo escuro e testes"
 ```
 
@@ -1299,14 +1389,14 @@ Cada execução deixa seu rastro no repositório:
 
 | Comando | O que faz |
 |---|---|
-| `next-harness init` | Detecta harnesses instalados, imprime a ordem de relevo, escreve `config.json` |
-| `next-harness run "<tarefa>"` | Executa uma tarefa, com relevo por cota |
+| `next-harness init` | Detecta harnesses instalados, imprime a ordem de transferência, escreve `config.json` |
+| `next-harness run "<tarefa>"` | Executa uma tarefa, com transferência por cota |
 | `next-harness resume` | Continua a tarefa já em `.next-harness/TASK.md` |
 | `next-harness status` | Quais harnesses estão pausados e até quando |
 | `next-harness doctor [--refresh] [--report]` | Inventário; `--report` imprime Markdown colável |
 | `next-harness config` | Onde ficam a configuração e o estado |
 
-Bandeiras úteis: `--lang pt|en|fr|es|de|it|zh|ja` em qualquer comando, `--max-relays <n>` e `--manual` em `run` e `resume`.
+Bandeiras úteis: `--lang pt|en|fr|es|de|it|zh|ja` em qualquer comando, `--max-attempts <n>` e `--manual` em `run` e `resume`.
 
 ### Por que um harness é pausado
 
@@ -1343,7 +1433,7 @@ da mensagem do próprio harness (`resets in 2 hours`, `try again in 30 seconds`,
 - `profiles/builtin.toml` é o catálogo, compilado no binário.
 - Substitua-o sem recompilar: coloque arquivos `*.toml` em
   `<config_dir>/profiles.d/`. São patches aplicados por `id` do harness.
-- `<config_dir>/config.json` armazena `max_relays` e `manual`, escritos por
+- `<config_dir>/config.json` armazena `max_attempts` e `manual`, escritos por
   `next-harness init` e mostrados por `next-harness config`.
 - `<config_dir>/state.json` armazena as pausas.
 
@@ -1415,7 +1505,7 @@ são bem-vindos. Veja [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Suporte
 
-O NextHarness Relay é MIT e permanece gratuito. Se ele salvou uma assinatura para você:
+O NextHarness é MIT e permanece gratuito. Se ele salvou uma assinatura para você:
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -1433,7 +1523,7 @@ O NextHarness Relay é MIT e permanece gratuito. Se ele salvou uma assinatura pa
 
 每个代理 AI 都会给你一个免费额度，而每个免费额度都会在任务中途耗尽。手动切换意味着重新阅读 diff，重新输入请求，并希望下一个工具能理解上一个停止的地方。
 
-NextHarness Relay 完成了这一交接。它以列表中的第一个 harness 开始你的任务，注意到某个 harness 额度已用尽，记录已完成的工作，并在下一个 harness 上继续同一任务——使用相同的任务文件和相同的工作树。
+NextHarness 完成了这一交接。它以列表中的第一个 harness 开始你的任务，注意到某个 harness 额度已用尽，记录已完成的工作，并在下一个 harness 上继续同一任务——使用相同的任务文件和相同的工作树。
 
 它不是代理。它从不与模型对话，从不读取任何 token，也不假装是它所驱动的任何工具。
 
@@ -1478,12 +1568,24 @@ NextHarness Relay 完成了这一交接。它以列表中的第一个 harness �
 
 ### 安装
 
-**预编译二进制文件** — 从 [Releases](https://github.com/SammyYohan/next-harness/releases) 下载适用于你平台的存档，验证旁边的 `.sha256`，并将 `next-harness` 放入你的 `PATH`。
+**一条命令** — 下载最新版本，校验 SHA-256 校验和并安装到你的 `PATH`。Windows（PowerShell）：
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS 和 Linux：
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
+**预编译二进制文件** — 从 [Releases](https://github.com/SammyYohan/NextHarness/releases) 下载适用于你平台的存档，验证旁边的 `.sha256`，并将 `next-harness` 放入你的 `PATH`。
 
 **从源代码编译** — 你需要 Rust 1.85 或更高版本：
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 在 Linux 上，编译需要 GTK 和 XDo 头文件，因为付费提示是原生对话框：
@@ -1497,7 +1599,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/my-project
 next-harness init                          # 检测已安装的 harness，写入默认值
-next-harness doctor                        # 查看中继顺序和缺失内容
+next-harness doctor                        # 查看交接顺序和缺失内容
 next-harness run "添加深色模式和测试"
 ```
 
@@ -1517,14 +1619,14 @@ next-harness run "添加深色模式和测试"
 
 | 命令 | 作用 |
 |---|---|
-| `next-harness init` | 检测已安装的 harness，打印中继顺序，写入 `config.json` |
-| `next-harness run "<任务>"` | 运行任务，基于配额中继 |
+| `next-harness init` | 检测已安装的 harness，打印交接顺序，写入 `config.json` |
+| `next-harness run "<任务>"` | 运行任务，基于配额交接 |
 | `next-harness resume` | 继续 `.next-harness/TASK.md` 中已存在的任务 |
 | `next-harness status` | 哪些 harness 暂停，以及直到何时 |
 | `next-harness doctor [--refresh] [--report]` | 清单；`--report` 打印可粘贴的 Markdown |
 | `next-harness config` | 配置和状态所在位置 |
 
-有用标志：对任何命令使用 `--lang zh|en|fr|es|de|it|pt|ja`，以及 `run` 和 `resume` 上的 `--max-relays <n>` 和 `--manual`。
+有用标志：对任何命令使用 `--lang zh|en|fr|es|de|it|pt|ja`，以及 `run` 和 `resume` 上的 `--max-attempts <n>` 和 `--manual`。
 
 ### 为什么 harness 会暂停
 
@@ -1551,7 +1653,7 @@ next-harness run "添加深色模式和测试"
 
 - `profiles/builtin.toml` 是目录，编译进二进制文件。
 - 无需重新编译即可替代它：将 `*.toml` 文件放入 `<config_dir>/profiles.d/`。它们是按 harness `id` 应用的补丁。
-- `<config_dir>/config.json` 保存 `max_relays` 和 `manual`，由 `next-harness init` 写入，由 `next-harness config` 显示。
+- `<config_dir>/config.json` 保存 `max_attempts` 和 `manual`，由 `next-harness init` 写入，由 `next-harness config` 显示。
 - `<config_dir>/state.json` 保存暂停。
 
 `<config_dir>` 是平台配置目录（Windows 上的 `%APPDATA%`、Linux 上的 `~/.config`、macOS 上的 `~/Library/Application Support`）。
@@ -1603,7 +1705,7 @@ NextHarness 已翻译成：
 
 ### 支持
 
-NextHarness Relay 是 MIT 协议且永久免费。如果它为你节省了订阅费：
+NextHarness 是 MIT 协议且永久免费。如果它为你节省了订阅费：
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)
@@ -1621,7 +1723,7 @@ NextHarness Relay 是 MIT 协议且永久免费。如果它为你节省了订阅
 
 すべてのコーディングエージェントは無料枠を提供していますが、その無料枠はタスクの途中で使い果たされます。手動で切り替えるには、diff を再度読み直し、リクエストを再入力し、次のツールが前のツールの続きを理解することを願う必要があります。
 
-NextHarness Relay がその引き継ぎを行います。リストの最初のハーネスでタスクを開始し、ハーネスが無料枠を使い果たしたときに検出し、何が行われたかを記録し、同じタスクファイルと同じワークツリーで次のハーネスを開始します。
+NextHarness がその引き継ぎを行います。リストの最初のハーネスでタスクを開始し、ハーネスが無料枠を使い果たしたときに検出し、何が行われたかを記録し、同じタスクファイルと同じワークツリーで次のハーネスを開始します。
 
 これはエージェントではありません。モデルと対話せず、トークンを読まず、駆動するツールのいずれかになりすましません。
 
@@ -1666,12 +1768,24 @@ NextHarness Relay がその引き継ぎを行います。リストの最初の�
 
 ### インストール
 
-**事前ビルド済みバイナリ** — [Releases](https://github.com/SammyYohan/next-harness/releases) からプラットフォーム用のアーカイブをダウンロードし、隣の `.sha256` を確認し、`next-harness` を `PATH` に配置してください。
+**ワンコマンド** — 最新リリースをダウンロードし、SHA-256 を検証して、`PATH` にインストールします。Windows（PowerShell）：
+
+```powershell
+irm https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.ps1 | iex
+```
+
+macOS と Linux：
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install.sh | sh
+```
+
+**事前ビルド済みバイナリ** — [Releases](https://github.com/SammyYohan/NextHarness/releases) からプラットフォーム用のアーカイブをダウンロードし、隣の `.sha256` を確認し、`next-harness` を `PATH` に配置してください。
 
 **ソースからビルド** — Rust 1.85 以降が必要です：
 
 ```sh
-cargo install --git https://github.com/SammyYohan/next-harness --bin next-harness
+cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
 Linux では、ビルドに GTK と XDo のヘッダーが必要です。これは支払いプロンプトがネイティブダイアログであるためです：
@@ -1685,7 +1799,7 @@ sudo apt-get install libgtk-3-dev libxdo-dev
 ```sh
 cd ~/code/my-project
 next-harness init                          # インストール済みハーネスを検出し、デフォルトを書き込む
-next-harness doctor                        # 中継順序と不足しているものを確認する
+next-harness doctor                        # 引き継ぎ順序と不足しているものを確認する
 next-harness run "ダークモードとテストを追加"
 ```
 
@@ -1704,14 +1818,14 @@ next-harness run "ダークモードとテストを追加"
 
 | コマンド | 説明 |
 |---|---|
-| `next-harness init` | インストール済みハーネスを検出し、中継順序を表示し、`config.json` を書き込む |
-| `next-harness run "<タスク>"` | タスクを実行し、無料枠に応じて中継する |
+| `next-harness init` | インストール済みハーネスを検出し、引き継ぎ順序を表示し、`config.json` を書き込む |
+| `next-harness run "<タスク>"` | タスクを実行し、無料枠に応じて引き継ぐ |
 | `next-harness resume` | `.next-harness/TASK.md` に保存されているタスクを続行する |
 | `next-harness status` | 一時停止中のハーネスと再開時刻を表示する |
 | `next-harness doctor [--refresh] [--report]` | インベントリ。`--report` は貼り付け可能な Markdown を出力する |
 | `next-harness config` | 設定と状態の保存場所を表示する |
 
-便利なフラグ: すべてのコマンドで `--lang ja|en|fr|es|de|it|pt|zh`、`run` と `resume` で `--max-relays <n>` と `--manual`。
+便利なフラグ: すべてのコマンドで `--lang ja|en|fr|es|de|it|pt|zh`、`run` と `resume` で `--max-attempts <n>` と `--manual`。
 
 ### ハーネスが一時停止される理由
 
@@ -1738,7 +1852,7 @@ next-harness run "ダークモードとテストを追加"
 
 - `profiles/builtin.toml` はバイナリにコンパイルされたカタログです。
 - 再コンパイルせずに上書きするには、`<config_dir>/profiles.d/` に `*.toml` ファイルを置いてください。これらはハーネス ID ごとに適用されるパッチです。
-- `<config_dir>/config.json` には `max_relays` と `manual` が保存され、`next-harness init` で書き込まれ、`next-harness config` で表示されます。
+- `<config_dir>/config.json` には `max_attempts` と `manual` が保存され、`next-harness init` で書き込まれ、`next-harness config` で表示されます。
 - `<config_dir>/state.json` には一時停止が保存されます。
 
 `<config_dir>` はプラットフォームの構成ディレクトリ（Windows の `%APPDATA%`、Linux の `~/.config`、macOS の `~/Library/Application Support`）です。
@@ -1790,7 +1904,7 @@ NextHarness は以下の言語に翻訳されています:
 
 ### サポート
 
-NextHarness Relay は MIT ライセンスで、無料のままです。サブスクリプションを節約できた場合は:
+NextHarness は MIT ライセンスで、無料のままです。サブスクリプションを節約できた場合は:
 
 - [GitHub Sponsors](https://github.com/sponsors/SammyYohan)
 - [Ko-fi](https://ko-fi.com/SammyYohan)

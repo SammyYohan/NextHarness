@@ -1,8 +1,8 @@
 //! Language selection and the locale-parity check.
 //!
 //! Translations live in `locales/*.yml` and are compiled into the binary by
-//! `rust-i18n`. A test keeps the two files in lockstep: a key that exists in one
-//! and not the other is a bug, not a fallback.
+//! `rust-i18n`. A test keeps all eight files in lockstep: a key or a placeholder
+//! that exists in some locales and not others is a bug, not a fallback.
 
 /// Locales shipped with this build, most specific first is not needed because
 /// [`normalize`] reduces any tag to one of these.

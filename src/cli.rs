@@ -27,7 +27,7 @@ use crate::{cache, VERSION};
 #[command(
     name = "next-harness",
     version = VERSION,
-    about = "One coding task, relayed across the coding harnesses installed on this machine",
+    about = "One coding task, handed to the next harness when the current one is out of quota",
     disable_help_subcommand = true
 )]
 struct Cli {
@@ -48,7 +48,7 @@ enum Command {
         task: String,
         /// Maximum number of harnesses to try
         #[arg(long, value_name = "N")]
-        max_relays: Option<usize>,
+        max_attempts: Option<usize>,
         /// Also prepare human-driven harnesses
         #[arg(long)]
         manual: bool,
@@ -57,7 +57,7 @@ enum Command {
     Resume {
         /// Maximum number of harnesses to try
         #[arg(long, value_name = "N")]
-        max_relays: Option<usize>,
+        max_attempts: Option<usize>,
         /// Also prepare human-driven harnesses
         #[arg(long)]
         manual: bool,
@@ -107,12 +107,13 @@ fn dispatch(command: Command) -> Result<i32> {
         Command::Init => init(&paths, &config),
         Command::Run {
             task,
-            max_relays,
+            max_attempts,
             manual,
-        } => start(&paths, &config, &prefs, &root, &task, max_relays, manual),
-        Command::Resume { max_relays, manual } => {
-            resume(&paths, &config, &prefs, &root, max_relays, manual)
-        }
+        } => start(&paths, &config, &prefs, &root, &task, max_attempts, manual),
+        Command::Resume {
+            max_attempts,
+            manual,
+        } => resume(&paths, &config, &prefs, &root, max_attempts, manual),
         Command::Status => status(&paths, &config),
         Command::Doctor { refresh, report } => check(&paths, &config, refresh, report),
         Command::Config => show_config(&paths, &config, &prefs),
@@ -201,7 +202,7 @@ fn start(
     prefs: &Preferences,
     root: &std::path::Path,
     task: &str,
-    max_relays: Option<usize>,
+    max_attempts: Option<usize>,
     manual: bool,
 ) -> Result<i32> {
     if !git::is_repo(root) {
@@ -209,10 +210,10 @@ fn start(
     }
 
     let settings = Settings {
-        max_relays: max_relays.unwrap_or(prefs.max_relays),
+        max_attempts: max_attempts.unwrap_or(prefs.max_attempts),
         manual: manual || prefs.manual,
     };
-    relay(paths, config, root, task, settings)
+    run_task(paths, config, root, task, settings)
 }
 
 fn resume(
@@ -220,7 +221,7 @@ fn resume(
     config: &Config,
     prefs: &Preferences,
     root: &std::path::Path,
-    max_relays: Option<usize>,
+    max_attempts: Option<usize>,
     manual: bool,
 ) -> Result<i32> {
     if !paths.task_file.is_file() {
@@ -233,13 +234,15 @@ fn resume(
     }
 
     let settings = Settings {
-        max_relays: max_relays.unwrap_or(prefs.max_relays),
+        max_attempts: max_attempts.unwrap_or(prefs.max_attempts),
         manual: manual || prefs.manual,
     };
-    relay(paths, config, root, &task, settings)
+    run_task(paths, config, root, &task, settings)
 }
 
-fn relay(
+/// One full task: walk the catalog and hand the task over whenever a harness
+/// runs out of quota.
+fn run_task(
     paths: &Paths,
     config: &Config,
     root: &std::path::Path,
@@ -352,7 +355,7 @@ fn show_config(paths: &Paths, config: &Config, prefs: &Preferences) -> Result<i3
         i18n::tr_args(
             "cli.config.settings",
             &[
-                ("count", prefs.max_relays.to_string()),
+                ("count", prefs.max_attempts.to_string()),
                 ("manual", prefs.manual.to_string()),
                 ("lang", rust_i18n::locale().to_string()),
             ],

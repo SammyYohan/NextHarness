@@ -1,5 +1,5 @@
 //! Where NextHarness keeps its files: the per-user configuration directory (catalog
-//! overrides, persistent state) and the per-repository `.NextHarness` directory
+//! overrides, persistent state) and the per-repository `.next-harness` directory
 //! (task, handoff, per-attempt logs).
 
 use std::path::{Path, PathBuf};
@@ -15,7 +15,7 @@ pub struct Paths {
     pub profiles_dir: PathBuf,
     /// Persisted pauses.
     pub state_file: PathBuf,
-    /// Relay preferences written by `NextHarness init`.
+    /// Preferences written by `next-harness init`.
     pub config_file: PathBuf,
     /// Last detection run, so `status` and `init` stay instant.
     pub cache_file: PathBuf,
@@ -23,7 +23,7 @@ pub struct Paths {
     pub next_harness_dir: PathBuf,
     /// The task handed to every harness.
     pub task_file: PathBuf,
-    /// The relay document written before switching harnesses.
+    /// The handoff document written before switching harnesses.
     pub handoff_file: PathBuf,
     /// Summary an agent is asked to write when it finishes.
     pub result_file: PathBuf,
@@ -55,12 +55,12 @@ impl Paths {
     }
 }
 
-/// The per-user configuration directory, or `NextHarness_CONFIG_DIR` when set.
+/// The per-user configuration directory, or `NEXTHARNESS_CONFIG_DIR` when set.
 ///
 /// The environment variable is what tests and portable installs use; it is not a
 /// user-facing setting.
 pub fn config_dir() -> Result<PathBuf> {
-    if let Some(dir) = std::env::var_os("NextHarness_CONFIG_DIR") {
+    if let Some(dir) = std::env::var_os("NEXTHARNESS_CONFIG_DIR") {
         return Ok(PathBuf::from(dir));
     }
     directories::ProjectDirs::from("", "", "next-harness")

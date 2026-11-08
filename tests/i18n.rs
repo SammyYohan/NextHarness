@@ -39,7 +39,46 @@ fn every_key_resolves_to_text_and_not_to_its_own_name() {
 }
 
 #[test]
-fn the_two_locales_really_differ() {
+fn every_locale_keeps_the_same_placeholders_in_each_message() {
+    let mut baseline: Option<Vec<(String, Vec<String>)>> = None;
+
+    for (locale, body) in sources() {
+        let slots_per_key: Vec<(String, Vec<String>)> = parse_keys(body)
+            .into_iter()
+            .map(|key| {
+                let text = translate(locale, &key);
+                let mut slots: Vec<String> = text
+                    .split("%{")
+                    .skip(1)
+                    .map(|rest| {
+                        rest.split('}')
+                            .next()
+                            .unwrap_or_default()
+                            .trim()
+                            .to_string()
+                    })
+                    .filter(|name| !name.is_empty())
+                    .collect();
+                slots.sort();
+                slots.dedup();
+                (key, slots)
+            })
+            .collect();
+
+        match &baseline {
+            None => baseline = Some(slots_per_key),
+            Some(previous) => assert_eq!(
+                previous, &slots_per_key,
+                "en and {locale} disagree on which placeholders each message uses"
+            ),
+        }
+    }
+
+    assert!(baseline.is_some(), "en is the baseline");
+}
+
+#[test]
+fn locales_really_differ() {
     assert_eq!(translate("en", "gate.title"), "Free quota exhausted");
     assert_eq!(translate("fr", "gate.title"), "Quota gratuit épuisé");
 }

@@ -1,4 +1,4 @@
-//! End-to-end relay tests. They use the repository's own fake harness, so no
+//! End-to-end handoff tests. They use the repository's own fake harness, so no
 //! network, account or real quota is involved, and no dialog can ever appear.
 
 mod common;
@@ -48,11 +48,17 @@ impl House {
         Paths::under(self.dir.path(), self.dir.path().join("config"))
     }
 
-    fn relay(&self, config: &Config, task: &str, state: &mut State, settings: Settings) -> Report {
-        self.relay_with(config, task, state, settings, &SilentUi)
+    fn run_task(
+        &self,
+        config: &Config,
+        task: &str,
+        state: &mut State,
+        settings: Settings,
+    ) -> Report {
+        self.run_task_with(config, task, state, settings, &SilentUi)
     }
 
-    fn relay_with(
+    fn run_task_with(
         &self,
         config: &Config,
         task: &str,
@@ -71,7 +77,7 @@ impl House {
             ui,
             settings,
         };
-        orchestrator::run(&session, state).expect("relay runs")
+        orchestrator::run(&session, state).expect("the run finishes")
     }
 
     fn handoff(&self) -> String {
@@ -91,8 +97,8 @@ fn entry(id: &str, name: &str, mode: &str, run: &str, tier: &str) -> String {
 }
 
 #[test]
-fn a_quota_message_makes_next_harness_to_the_next_harness() {
-    let house = House::new("relay-quota");
+fn a_quota_message_hands_the_task_to_the_next_harness() {
+    let house = House::new("handoff-quota");
     let config = catalog(&format!(
         "{}{}",
         entry(
@@ -112,7 +118,7 @@ fn a_quota_message_makes_next_harness_to_the_next_harness() {
     ));
 
     let mut state = State::default();
-    let report = house.relay(
+    let report = house.run_task(
         &config,
         "rename the widget module",
         &mut state,
@@ -139,7 +145,7 @@ fn a_quota_message_makes_next_harness_to_the_next_harness() {
 
 #[test]
 fn a_quota_word_inside_a_long_successful_log_pauses_nothing() {
-    let house = House::new("relay-wordy");
+    let house = House::new("handoff-wordy");
     let config = catalog(&entry(
         "wordy",
         "Wordy agent",
@@ -149,7 +155,7 @@ fn a_quota_word_inside_a_long_successful_log_pauses_nothing() {
     ));
 
     let mut state = State::default();
-    let report = house.relay(
+    let report = house.run_task(
         &config,
         "explain the quota code",
         &mut state,
@@ -168,8 +174,8 @@ fn a_quota_word_inside_a_long_successful_log_pauses_nothing() {
 }
 
 #[test]
-fn the_relay_limit_stops_the_walk() {
-    let house = House::new("relay-limit");
+fn the_attempt_limit_stops_the_walk() {
+    let house = House::new("handoff-limit");
     let config = catalog(&format!(
         "{}{}{}",
         entry("a", "A", "headless", "\"quota-exit\", \"{prompt}\"", "free"),
@@ -179,10 +185,10 @@ fn the_relay_limit_stops_the_walk() {
 
     let mut state = State::default();
     let settings = Settings {
-        max_relays: 2,
+        max_attempts: 2,
         manual: false,
     };
-    let report = house.relay(&config, "do something", &mut state, settings);
+    let report = house.run_task(&config, "do something", &mut state, settings);
 
     assert_eq!(report.conclusion, Conclusion::Exhausted);
     assert_eq!(report.attempts.len(), 2);
@@ -196,7 +202,7 @@ fn the_relay_limit_stops_the_walk() {
 
 #[test]
 fn a_paid_harness_is_never_started_without_consent() {
-    let house = House::new("relay-paid");
+    let house = House::new("handoff-paid");
     let config = catalog(&entry(
         "expensive",
         "Expensive agent",
@@ -206,7 +212,7 @@ fn a_paid_harness_is_never_started_without_consent() {
     ));
 
     let mut state = State::default();
-    let report = house.relay(&config, "do something", &mut state, Settings::default());
+    let report = house.run_task(&config, "do something", &mut state, Settings::default());
 
     assert_eq!(report.conclusion, Conclusion::Stopped);
     assert!(
@@ -218,7 +224,7 @@ fn a_paid_harness_is_never_started_without_consent() {
 
 #[test]
 fn pauses_survive_a_restart() {
-    let house = House::new("relay-restart");
+    let house = House::new("handoff-restart");
     let config = catalog(&format!(
         "{}{}",
         entry(
@@ -239,7 +245,7 @@ fn pauses_survive_a_restart() {
 
     let paths = house.paths();
     let mut state = State::default();
-    let first = house.relay(&config, "write the docs", &mut state, Settings::default());
+    let first = house.run_task(&config, "write the docs", &mut state, Settings::default());
     assert_eq!(first.conclusion, Conclusion::Finished);
 
     // A new process would only have the file.
@@ -247,7 +253,7 @@ fn pauses_survive_a_restart() {
     assert!(reloaded.is_paused("first", next_harness::timefmt::now_epoch()));
 
     let mut state = reloaded;
-    let second = house.relay(&config, "write the docs", &mut state, Settings::default());
+    let second = house.run_task(&config, "write the docs", &mut state, Settings::default());
     assert_eq!(second.conclusion, Conclusion::Finished);
     assert_eq!(
         second.attempts.first().map(|attempt| attempt.id.as_str()),
@@ -258,7 +264,7 @@ fn pauses_survive_a_restart() {
 
 #[test]
 fn the_handoff_masks_what_the_agent_printed() {
-    let house = House::new("relay-mask");
+    let house = House::new("handoff-mask");
     let config = catalog(&format!(
         "{}{}",
         entry(
@@ -278,7 +284,7 @@ fn the_handoff_masks_what_the_agent_printed() {
     ));
 
     let mut state = State::default();
-    let report = house.relay(
+    let report = house.run_task(
         &config,
         "fix the key handling",
         &mut state,
@@ -313,7 +319,7 @@ fn the_handoff_masks_what_the_agent_printed() {
 
 #[test]
 fn an_interactive_harness_is_only_prepared() {
-    let house = House::new("relay-manual");
+    let house = House::new("handoff-manual");
     let config = catalog(&entry(
         "human",
         "Human-driven",
@@ -324,10 +330,10 @@ fn an_interactive_harness_is_only_prepared() {
 
     let mut state = State::default();
     let settings = Settings {
-        max_relays: 3,
+        max_attempts: 3,
         manual: true,
     };
-    let report = house.relay(&config, "review the pull request", &mut state, settings);
+    let report = house.run_task(&config, "review the pull request", &mut state, settings);
 
     assert_eq!(report.conclusion, Conclusion::Manual);
     assert_eq!(report.attempts.len(), 1);
@@ -336,7 +342,7 @@ fn an_interactive_harness_is_only_prepared() {
 
 #[test]
 fn an_interactive_harness_is_ignored_without_manual_mode() {
-    let house = House::new("relay-manual-off");
+    let house = House::new("handoff-manual-off");
     let config = catalog(&entry(
         "human",
         "Human-driven",
@@ -346,7 +352,7 @@ fn an_interactive_harness_is_ignored_without_manual_mode() {
     ));
 
     let mut state = State::default();
-    let report = house.relay(
+    let report = house.run_task(
         &config,
         "review the pull request",
         &mut state,

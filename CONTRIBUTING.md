@@ -1,7 +1,7 @@
 # Contributing
 
-Thanks for helping. NextHarness Relay is deliberately small: a catalogue, a detector, a
-runner, a quota rule and a relay loop. Contributions that keep it that way are
+Thanks for helping. NextHarness is deliberately small: a catalogue, a detector, a
+runner, a quota rule and a handoff loop. Contributions that keep it that way are
 the easiest to merge.
 
 ## Build
@@ -86,10 +86,10 @@ pauses a working harness, which is worse than a missed detection.
 - `src/quota.rs` (unit tests) — the two-signal rule, including the false
   positive that must stay inert.
 - `tests/runner.rs` — the pseudo-terminal, timeouts, killing.
-- `tests/relay.rs` — the whole relay, using the repository's own fake harness.
+- `tests/handoff.rs` — the whole handoff loop, using the repository's own fake harness.
 - `tests/cli.rs` — the binary as a user meets it.
 - `src/bin/fake_harness.rs` — the fixture all of the above use. It is never
-  shipped: the release workflow builds `--bin NextHarness` only.
+  shipped: the release workflow builds `--bin next-harness` only.
 
 Tests must never need a network, an account, real quota, or a dialog. If a test
 opens a window, it is a bug.
@@ -99,7 +99,7 @@ opens a window, it is a bug.
 The catalogue's `verified` column improves with real reports. Run:
 
 ```sh
-NextHarness doctor --report
+next-harness doctor --report
 ```
 
 and paste the result into a [test report](.github/ISSUE_TEMPLATE/test-report.md).
@@ -109,5 +109,5 @@ credential — please check it before posting anyway.
 ## Style
 
 Comments explain *why*, not *what*. Every public item carries a doc comment.
-User-facing text goes through `locales/en.yml` and `locales/fr.yml`, which a test
-keeps identical key for key.
+User-facing text goes through `locales/`. The test suite keeps all eight
+locales identical key for key and placeholder for placeholder.

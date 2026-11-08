@@ -1,4 +1,4 @@
-//! Persistent relay state: which harness is paused, until when, and why.
+//! Persistent handoff state: which harness is paused, until when, and why.
 //!
 //! The file is written atomically (temporary file in the same directory,
 //! `fsync`, rename) so a crash during a save cannot leave a half-written state

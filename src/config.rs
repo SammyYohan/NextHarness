@@ -220,7 +220,7 @@ pub struct Catalog {
     /// Extra binary search directories.
     #[serde(default)]
     pub detect_search_dirs: SearchDirs,
-    /// Every entry, in relay order.
+    /// Every entry, in catalog file order — the order a run walks.
     #[serde(default, rename = "harness")]
     pub harnesses: Vec<Harness>,
 }
@@ -244,11 +244,11 @@ impl Config {
         Self::parse(BUILTIN, None, "<builtin>")
     }
 
-    /// Load the catalog for this user: built-in (or `NextHarness_CATALOG`), then the
+    /// Load the catalog for this user: built-in (or `NEXTHARNESS_CATALOG`), then the
     /// overrides in `<config_dir>/profiles.d`.
     pub fn load(config_dir: &Path) -> Result<Self> {
         let override_dir = config_dir.join("profiles.d");
-        match std::env::var_os("NextHarness_CATALOG") {
+        match std::env::var_os("NEXTHARNESS_CATALOG") {
             Some(path) => {
                 let path = PathBuf::from(path);
                 let text = std::fs::read_to_string(&path).map_err(|e| error::io(&path, e))?;
@@ -313,7 +313,7 @@ impl Config {
         }
     }
 
-    /// Identifiers in relay order.
+    /// Identifiers in catalog file order.
     pub fn ids(&self) -> Vec<&str> {
         self.catalog
             .harnesses

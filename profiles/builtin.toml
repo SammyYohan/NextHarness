@@ -1,4 +1,4 @@
-# NEXTHARNESS — built-in harness catalog (profiles.toml)
+# NEXTHARNESS — built-in harness catalog (profiles/builtin.toml)
 # Compiled on 2026-11-06 from public docs (see `source` on each entry).
 #
 # READ THIS FIRST
@@ -8,8 +8,8 @@
 #               "third_party" = third-party guide or tool that wraps the harness
 #               "unverified"  = must be tested on a real machine before trusting
 # - `run` is the argument list after the binary. Placeholders:
-#     {prompt}     ALWAYS a short fixed sentence pointing to .NextHarness/TASK.md or
-#                  .NextHarness/HANDOFF.md (never user text: avoids quoting bugs, argument
+#     {prompt}     ALWAYS a short fixed sentence pointing to .next-harness/TASK.md or
+#                  .next-harness/HANDOFF.md (never user text: avoids quoting bugs, argument
 #                  length limits and the Windows .cmd-shim escaping restrictions).
 #     {unattended} replaced by `unattended_args` only if the user opted in for this
 #                  harness; removed otherwise.
@@ -22,7 +22,8 @@ catalog_date = "2026-11-06"
 
 # ---------------------------------------------------------------------------
 # Generic signals (used when a profile has no specific pattern).
-# Never decide on a pattern alone: see the "two-signal rule" in the project prompt.
+# Never decide on a pattern alone: see the two-signal rule in the README
+# ("Why a harness is paused").
 # ---------------------------------------------------------------------------
 [detection_generic]
 quota = [
@@ -155,7 +156,7 @@ name = "Freebuff"
 mode = "interactive"
 binaries = ["freebuff"]
 version_args = ["--version"]
-manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
+manual_prompt = "Read .next-harness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "official"
@@ -449,7 +450,7 @@ id = "antigravity-app"
 name = "Antigravity (desktop app)"
 mode = "gui"
 gui_keywords = ["antigravity"]
-manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
+manual_prompt = "Read .next-harness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "unverified"
@@ -461,7 +462,7 @@ id = "freebuff-desktop"
 name = "Freebuff Desktop"
 mode = "gui"
 gui_keywords = ["freebuff"]
-manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
+manual_prompt = "Read .next-harness/HANDOFF.md and continue the task."
 default_tier = "free"
 enabled_by_default = true
 verified = "unverified"
@@ -473,7 +474,7 @@ id = "cursor-app"
 name = "Cursor (editor)"
 mode = "gui"
 gui_keywords = ["cursor"]
-manual_prompt = "Read .NextHarness/HANDOFF.md and continue the task."
+manual_prompt = "Read .next-harness/HANDOFF.md and continue the task."
 default_tier = "unknown"
 enabled_by_default = true
 verified = "unverified"

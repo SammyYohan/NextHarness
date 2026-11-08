@@ -7,7 +7,7 @@
 use crate::config::Config;
 use crate::detector::Detection;
 use crate::i18n;
-use crate::orchestrator::DEFAULT_MAX_RELAYS;
+use crate::orchestrator::DEFAULT_MAX_ATTEMPTS;
 use crate::paths::{home_dir, Paths};
 use crate::timefmt::{format_utc, now_epoch};
 use crate::util::{mask_home, truncate};
@@ -98,7 +98,7 @@ pub fn markdown(config: &Config, detections: &[Detection], paths: &Paths) -> Str
         scrubbed(paths.state_file.display())
     ));
     out.push_str(&format!(
-        "- relay limit: {DEFAULT_MAX_RELAYS} harnesses (default)\n\n"
+        "- attempts per run: {DEFAULT_MAX_ATTEMPTS} (default)\n\n"
     ));
 
     out.push_str("| id | name | mode | status | version | tier | verified |\n");

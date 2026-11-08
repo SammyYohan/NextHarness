@@ -20,7 +20,7 @@ use crate::util::{mask_home, mask_secrets, tail_lines};
 /// How much of the previous output the handoff keeps.
 pub const OUTPUT_TAIL: usize = 40;
 
-/// Write the task document, creating `.NextHarness` if needed.
+/// Write the task document, creating `.next-harness` if needed.
 pub fn write_task(paths: &Paths, task: &str) -> Result<()> {
     fs::create_dir_all(&paths.next_harness_dir)
         .map_err(|e| error::io(&paths.next_harness_dir, e))?;
@@ -28,7 +28,7 @@ pub fn write_task(paths: &Paths, task: &str) -> Result<()> {
     fs::write(&paths.task_file, body).map_err(|e| error::io(&paths.task_file, e))
 }
 
-/// Read the task document back, for `NextHarness resume`.
+/// Read the task document back, for `next-harness resume`.
 pub fn read_task(paths: &Paths) -> Result<String> {
     let text = fs::read_to_string(&paths.task_file).map_err(|e| error::io(&paths.task_file, e))?;
     let body = text
