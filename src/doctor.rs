@@ -58,6 +58,7 @@ pub fn lines(config: &Config, detections: &[Detection], paths: &Paths) -> Vec<St
                 ("id", detection.id.clone()),
                 ("version", detection.version.clone().unwrap_or_default()),
                 ("verified", detection.verified.label().to_string()),
+                ("detail", scrubbed(&detection.detail)),
             ],
         ));
     }
@@ -101,18 +102,19 @@ pub fn markdown(config: &Config, detections: &[Detection], paths: &Paths) -> Str
         "- attempts per run: {DEFAULT_MAX_ATTEMPTS} (default)\n\n"
     ));
 
-    out.push_str("| id | name | mode | status | version | tier | verified |\n");
-    out.push_str("| --- | --- | --- | --- | --- | --- | --- |\n");
+    out.push_str("| id | name | mode | status | version | tier | verified | detail |\n");
+    out.push_str("| --- | --- | --- | --- | --- | --- | --- | --- |\n");
     for detection in detections {
         out.push_str(&format!(
-            "| {} | {} | {} | {} | {} | {} | {} |\n",
+            "| {} | {} | {} | {} | {} | {} | {} | {} |\n",
             cell(&detection.id),
             cell(&detection.name),
             mode_label(detection),
             cell(&i18n::tr(detection.status.label_key())),
             cell(detection.version.as_deref().unwrap_or("-")),
             detection.tier.label(),
-            detection.verified.label()
+            detection.verified.label(),
+            cell(&scrubbed(&detection.detail))
         ));
     }
 
@@ -141,7 +143,9 @@ fn cell(text: &str) -> String {
 }
 
 fn rustc_version() -> String {
-    option_env!("CARGO_PKG_RUST_VERSION")
+    // Recorded by build.rs. `CARGO_PKG_RUST_VERSION` would only give the
+    // declared minimum, not the compiler that produced this binary.
+    option_env!("NEXTHARNESS_RUSTC")
         .filter(|value| !value.is_empty())
         .unwrap_or("unknown")
         .to_string()

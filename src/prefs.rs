@@ -29,6 +29,9 @@ pub struct Preferences {
     /// Whether human-driven harnesses may be prepared.
     #[serde(default)]
     pub manual: bool,
+    /// Configured priority order for harnesses.
+    #[serde(default)]
+    pub priority: Vec<String>,
 }
 
 fn default_max_attempts() -> usize {
@@ -41,6 +44,7 @@ impl Default for Preferences {
             version: default_version(),
             max_attempts: default_max_attempts(),
             manual: false,
+            priority: Vec::new(),
         }
     }
 }
@@ -84,5 +88,12 @@ mod tests {
         let prefs: Preferences = serde_json::from_str(r#"{ "manual": true }"#).expect("parse");
         assert_eq!(prefs.max_attempts, DEFAULT_MAX_ATTEMPTS);
         assert!(prefs.manual);
+        assert!(prefs.priority.is_empty());
+    }
+
+    #[test]
+    fn priority_can_be_read_from_json() {
+        let prefs: Preferences = serde_json::from_str(r#"{ "priority": ["kilo", "opencode", "agy"] }"#).expect("parse");
+        assert_eq!(prefs.priority, vec!["kilo", "opencode", "agy"]);
     }
 }

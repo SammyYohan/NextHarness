@@ -187,6 +187,8 @@ fn the_attempt_limit_stops_the_walk() {
     let settings = Settings {
         max_attempts: 2,
         manual: false,
+        order: None,
+        priority: Vec::new(),
     };
     let report = house.run_task(&config, "do something", &mut state, settings);
 
@@ -332,6 +334,8 @@ fn an_interactive_harness_is_only_prepared() {
     let settings = Settings {
         max_attempts: 3,
         manual: true,
+        order: None,
+        priority: Vec::new(),
     };
     let report = house.run_task(&config, "review the pull request", &mut state, settings);
 
@@ -361,4 +365,122 @@ fn an_interactive_harness_is_ignored_without_manual_mode() {
 
     assert_eq!(report.conclusion, Conclusion::Exhausted);
     assert!(report.attempts.is_empty());
+}
+
+#[test]
+fn checklist_is_created_and_passed_in_handoff() {
+    let house = House::new("handoff-checklist");
+    let config = catalog(&format!(
+        "{}{}",
+        entry(
+            "first",
+            "First",
+            "headless",
+            "\"quota-exit\", \"{prompt}\"",
+            "free"
+        ),
+        entry(
+            "second",
+            "Second",
+            "headless",
+            "\"success\", \"{prompt}\"",
+            "free"
+        ),
+    ));
+
+    let mut state = State::default();
+    let report = house.run_task(
+        &config,
+        "implement user profile feature",
+        &mut state,
+        Settings::default(),
+    );
+
+    assert_eq!(report.conclusion, Conclusion::Finished);
+    let handoff = house.handoff();
+    assert!(handoff.contains("implement user profile feature"), "{handoff}");
+    assert!(handoff.contains("- [ ]"), "{handoff}");
+    assert!(house.paths().checklist_file.is_file());
+}
+
+#[test]
+fn configured_order_overrides_catalog_order() {
+    let house = House::new("handoff-order");
+    let config = catalog(&format!(
+        "{}{}",
+        entry(
+            "first",
+            "First",
+            "headless",
+            "\"success\", \"{prompt}\"",
+            "free"
+        ),
+        entry(
+            "second",
+            "Second",
+            "headless",
+            "\"success\", \"{prompt}\"",
+            "free"
+        ),
+    ));
+
+    let mut state = State::default();
+    let settings = Settings {
+        max_attempts: 1,
+        manual: false,
+        order: Some(vec!["second".to_string()]),
+        priority: Vec::new(),
+    };
+    let report = house.run_task(
+        &config,
+        "build feature",
+        &mut state,
+        settings,
+    );
+
+    assert_eq!(report.conclusion, Conclusion::Finished);
+    assert_eq!(
+        report.winner(),
+        Some("second"),
+        "second must run first when requested by order"
+    );
+}
+
+#[test]
+fn diagnostic_detects_interrupted_syntax_issue_in_handoff() {
+    let house = House::new("handoff-diagnostic");
+    let config = catalog(&format!(
+        "{}{}",
+        entry(
+            "first",
+            "First",
+            "headless",
+            "\"quota-exit\", \"{prompt}\"",
+            "free"
+        ),
+        entry(
+            "second",
+            "Second",
+            "headless",
+            "\"success\", \"{prompt}\"",
+            "free"
+        ),
+    ));
+
+    // Create a broken json file in repository as if an agent was interrupted mid-write
+    let broken_file = house.dir.path().join("broken.json");
+    std::fs::write(&broken_file, "{\n  \"incomplete\": true,\n").unwrap();
+
+    let mut state = State::default();
+    let report = house.run_task(
+        &config,
+        "fix database migration",
+        &mut state,
+        Settings::default(),
+    );
+
+    assert_eq!(report.conclusion, Conclusion::Finished);
+    let handoff = house.handoff();
+    assert!(handoff.contains("broken.json"), "{handoff}");
+    assert!(handoff.contains("json-syntax"), "{handoff}");
 }

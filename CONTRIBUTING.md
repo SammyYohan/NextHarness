@@ -13,12 +13,9 @@ cargo build            # debug
 cargo build --release  # what users run
 ```
 
-Linux also needs the GTK and XDo headers, because the pay prompt is a native
-dialog:
-
-```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
-```
+Linux needs no extra packages to build. At runtime the pay prompt is drawn by
+zenity or kdialog when one of them is installed; without either, NextHarness
+asks at the terminal or waits — it never spends by itself.
 
 ## Before opening a pull request
 

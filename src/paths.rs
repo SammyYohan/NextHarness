@@ -23,6 +23,8 @@ pub struct Paths {
     pub next_harness_dir: PathBuf,
     /// The task handed to every harness.
     pub task_file: PathBuf,
+    /// Checklist tracking completed and pending work across harnesses.
+    pub checklist_file: PathBuf,
     /// The handoff document written before switching harnesses.
     pub handoff_file: PathBuf,
     /// Summary an agent is asked to write when it finishes.
@@ -41,6 +43,7 @@ impl Paths {
             config_file: config_dir.join("config.json"),
             cache_file: config_dir.join("detect-cache.json"),
             task_file: next_harness_dir.join("TASK.md"),
+            checklist_file: next_harness_dir.join("CHECKLIST.md"),
             handoff_file: next_harness_dir.join("HANDOFF.md"),
             result_file: next_harness_dir.join("RESULT.md"),
             runs_dir: next_harness_dir.join("runs"),

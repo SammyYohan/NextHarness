@@ -787,6 +787,7 @@ dependencies = [
  "clap",
  "crossterm",
  "directories",
+ "libc",
  "native-dialog",
  "portable-pty",
  "regex",

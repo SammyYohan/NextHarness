@@ -12,8 +12,9 @@ use crate::config::{Config, Harness, Mode};
 use crate::detector::{Detection, Status};
 use crate::error::Result;
 use crate::gatekeeper::{self, Answer, Question, Ui};
+use crate::diagnostic;
 use crate::git;
-use crate::handoff::{self, Handoff};
+use crate::handoff::{self, Checkpoint, Handoff};
 use crate::i18n;
 use crate::paths::Paths;
 use crate::quota::{self, Effect};
@@ -31,6 +32,10 @@ pub struct Settings {
     pub max_attempts: usize,
     /// Whether human-driven harnesses may be prepared.
     pub manual: bool,
+    /// Overriding order of harnesses for this run (from CLI --order/--chain).
+    pub order: Option<Vec<String>>,
+    /// Configured priority from preferences.
+    pub priority: Vec<String>,
 }
 
 impl Default for Settings {
@@ -38,6 +43,8 @@ impl Default for Settings {
         Self {
             max_attempts: DEFAULT_MAX_ATTEMPTS,
             manual: false,
+            order: None,
+            priority: Vec::new(),
         }
     }
 }
@@ -105,6 +112,30 @@ impl Report {
     }
 }
 
+/// Determine the order to evaluate harnesses. If a preference is set, those IDs
+/// appear first in the specified order, followed by remaining IDs from catalog.
+pub fn execution_order<'a>(catalog_ids: &[&'a str], preference: &[String]) -> Vec<&'a str> {
+    if preference.is_empty() {
+        return catalog_ids.to_vec();
+    }
+    let mut result = Vec::with_capacity(catalog_ids.len());
+    let mut seen = std::collections::HashSet::new();
+
+    for id in preference {
+        if let Some(&matching) = catalog_ids.iter().find(|&&c| c == id) {
+            if seen.insert(matching) {
+                result.push(matching);
+            }
+        }
+    }
+    for &id in catalog_ids {
+        if seen.insert(id) {
+            result.push(id);
+        }
+    }
+    result
+}
+
 /// Run the handoff loop once.
 pub fn run(session: &Session, state: &mut State) -> Result<Report> {
     handoff::write_task(session.paths, session.task)?;
@@ -114,7 +145,15 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
     let limit = session.settings.max_attempts.max(1);
     let mut attempts: Vec<Attempt> = Vec::new();
 
-    for id in session.config.ids() {
+    let preferred = session
+        .settings
+        .order
+        .as_deref()
+        .unwrap_or(&session.settings.priority);
+    let catalog_ids = session.config.ids();
+    let ordered_ids = execution_order(&catalog_ids, preferred);
+
+    for id in ordered_ids {
         if attempts.len() >= limit {
             break;
         }
@@ -174,6 +213,8 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
             ],
         ));
 
+        let start_commit = git::head_commit(session.root);
+
         let outcome = match runner::run(&binary, &args, session.root, &params) {
             Ok(outcome) => outcome,
             Err(error) => {
@@ -187,6 +228,27 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
         };
 
         record(session.paths, harness, &outcome);
+
+        let end_commit = git::head_commit(session.root);
+        let commits_created = match (&start_commit, &end_commit) {
+            (Some(s), Some(e)) if s != e => git::commits_between(session.root, s, e),
+            _ => None,
+        };
+        let checkpoint = Checkpoint {
+            base_commit: start_commit,
+            current_commit: end_commit,
+            commits_created,
+        };
+        let diagnostic = diagnostic::check(session.root);
+        if !diagnostic.is_clean() {
+            session.ui.say(&i18n::tr_args(
+                "cli.run.diagnostic_issues",
+                &[
+                    ("name", harness.name.clone()),
+                    ("count", diagnostic.issues.len().to_string()),
+                ],
+            ));
+        }
 
         let now = now_epoch();
         let verdict = quota::classify(
@@ -233,6 +295,8 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
                         harness,
                         reason: &reason,
                         output: &outcome.output,
+                        checkpoint: Some(checkpoint),
+                        diagnostic: Some(diagnostic),
                     },
                 )?;
                 session.ui.say(&i18n::tr_args(
@@ -273,6 +337,8 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
                 harness,
                 reason: &reason,
                 output: &outcome.output,
+                checkpoint: Some(checkpoint),
+                diagnostic: Some(diagnostic),
             },
         )?;
         attempts.push(Attempt {

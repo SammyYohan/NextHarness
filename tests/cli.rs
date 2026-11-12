@@ -198,6 +198,25 @@ fn resume_without_a_task_explains_what_to_do() {
 }
 
 #[test]
+fn a_fresh_run_clears_a_stale_handoff() {
+    let dir = TestDir::new("cli-stale-handoff");
+    let path = catalog(&dir, &entry("only", "Only", "\"success\", \"{prompt}\""));
+    dir.write(
+        ".next-harness/HANDOFF.md",
+        "stale handoff from an older task",
+    );
+
+    let output = next_harness_with_catalog(&dir, &path, &["run", "a brand new task"]);
+    assert!(output.status.success(), "{}", text(&output));
+
+    let handoff = dir.path().join(".next-harness").join("HANDOFF.md");
+    assert!(
+        !handoff.is_file(),
+        "a new task must not inherit the previous handoff"
+    );
+}
+
+#[test]
 fn init_writes_the_preferences_file() {
     let dir = TestDir::new("cli-init");
     let path = catalog(&dir, &entry("only", "Only", "\"success\", \"{prompt}\""));
@@ -225,4 +244,26 @@ fn the_attempt_limit_can_be_raised_from_the_command_line() {
 
     let output = next_harness_with_catalog(&dir, &path, &["run", "do it", "--max-attempts", "3"]);
     assert!(output.status.success(), "{}", text(&output));
+}
+
+#[test]
+fn order_flag_changes_execution_order() {
+    let dir = TestDir::new("cli-order");
+    let path = catalog(
+        &dir,
+        &format!(
+            "{}{}",
+            entry("first", "First", "\"quota-exit\", \"{prompt}\""),
+            entry("second", "Second", "\"success\", \"{prompt}\""),
+        ),
+    );
+
+    // If second is prioritized via --order, only 1 attempt is needed to succeed
+    let output = next_harness_with_catalog(
+        &dir,
+        &path,
+        &["run", "quick test", "--order", "second", "--max-attempts", "1"],
+    );
+    assert!(output.status.success(), "{}", text(&output));
+    assert!(text(&output).contains("Second finished the task"), "{}", text(&output));
 }

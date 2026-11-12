@@ -13,9 +13,11 @@
 set -eu
 
 REPO="SammyYohan/NextHarness"
+API_RELEASES="https://api.github.com/repos/$REPO/releases?per_page=20"
 LATEST="https://github.com/$REPO/releases/latest/download"
 INSTALL_DIR="$HOME/.local/bin"
 INSTALL_BIN="$INSTALL_DIR/next-harness"
+TARGET=""
 
 # Directory holding this script, empty when the script arrives through a pipe.
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd)" || SCRIPT_DIR=""
@@ -25,6 +27,17 @@ fetch() { # fetch <url> <file>
         curl -fsSL --output "$2" "$1"
     elif command -v wget >/dev/null 2>&1; then
         wget -qO "$2" "$1"
+    else
+        echo "next-harness installer: curl or wget is required to download the release." >&2
+        exit 1
+    fi
+}
+
+fetch_stdout() { # fetch_stdout <url>
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$1"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO- "$1"
     else
         echo "next-harness installer: curl or wget is required to download the release." >&2
         exit 1
@@ -59,10 +72,31 @@ else
             ;;
     esac
 
+    ARCHIVE_NAME="next-harness-$TARGET.tar.gz"
+    ASSET_URL="$LATEST/$ARCHIVE_NAME"
+    CHECK_URL="$LATEST/$ARCHIVE_NAME.sha256"
+
+    # `releases/latest` skips prereleases, and this project ships betas: ask the
+    # API for the newest release (prereleases included) that carries both the
+    # archive and its checksum, so both files come from the same release.
+    RELEASES="$(fetch_stdout "$API_RELEASES" 2>/dev/null || true)"
+    if [ -n "$RELEASES" ]; then
+        TAGS="$(printf '%s\n' "$RELEASES" | grep -o '"tag_name":"[^"]*"' | cut -d'"' -f4)"
+        for tag in $TAGS; do
+            A="$(printf '%s\n' "$RELEASES" | grep -o "\"browser_download_url\":\"[^\"]*/download/$tag/$ARCHIVE_NAME\"" | cut -d'"' -f4 | head -n 1)"
+            C="$(printf '%s\n' "$RELEASES" | grep -o "\"browser_download_url\":\"[^\"]*/download/$tag/$ARCHIVE_NAME.sha256\"" | cut -d'"' -f4 | head -n 1)"
+            if [ -n "$A" ] && [ -n "$C" ]; then
+                ASSET_URL="$A"
+                CHECK_URL="$C"
+                break
+            fi
+        done
+    fi
+
     echo "Downloading the latest release for $TARGET..."
-    ARCHIVE="$TMP_DIR/next-harness-$TARGET.tar.gz"
-    if ! fetch "$LATEST/next-harness-$TARGET.tar.gz" "$ARCHIVE" ||
-        ! fetch "$LATEST/next-harness-$TARGET.tar.gz.sha256" "$ARCHIVE.sha256"; then
+    ARCHIVE="$TMP_DIR/$ARCHIVE_NAME"
+    if ! fetch "$ASSET_URL" "$ARCHIVE" ||
+        ! fetch "$CHECK_URL" "$ARCHIVE.sha256"; then
         echo "next-harness installer: download failed. Check that a release exists at" >&2
         echo "https://github.com/$REPO/releases" >&2
         exit 1
@@ -107,8 +141,9 @@ esac
 
 case "$TARGET" in
     *linux-gnu)
-        echo "Note: on a minimal distro, install the GTK 3 runtime so the pay prompt works"
-        echo "(Debian/Ubuntu: sudo apt-get install libgtk-3-0 libxdo3)."
+        echo "Note: the pay prompt is drawn by zenity or kdialog when one of them is"
+        echo "installed (Debian/Ubuntu: sudo apt-get install zenity). Without either,"
+        echo "NextHarness asks at the terminal or waits: it never spends by itself."
         ;;
 esac
 

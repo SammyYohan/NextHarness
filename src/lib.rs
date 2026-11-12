@@ -11,6 +11,7 @@ pub mod cache;
 pub mod cli;
 pub mod config;
 pub mod detector;
+pub mod diagnostic;
 pub mod doctor;
 pub mod error;
 pub mod gatekeeper;

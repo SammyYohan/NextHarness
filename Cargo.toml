@@ -43,3 +43,7 @@ thiserror = "2.0.21"
 tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "time", "sync"] }
 toml = "1.2.1"
 which = "8.0.6"
+
+[target.'cfg(unix)'.dependencies]
+# Process-group kill, so a timed-out agent leaves no grandchild behind.
+libc = "0.2"

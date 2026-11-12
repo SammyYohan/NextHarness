@@ -71,3 +71,48 @@ pub fn diff_stat(root: &Path) -> Option<String> {
     }
     Some(summary)
 }
+
+/// The current short HEAD commit, or None if not a repo or repo has no commits.
+pub fn head_commit(root: &Path) -> Option<String> {
+    git(root, &["rev-parse", "--short", "HEAD"])
+}
+
+/// Commits between `base` and `head`: `git log --oneline base..head`.
+pub fn commits_between(root: &Path, base: &str, head: &str) -> Option<String> {
+    git(root, &["log", "--oneline", &format!("{base}..{head}")])
+}
+
+/// Run `git diff --check` to detect leftover conflict markers and whitespace problems.
+pub fn diff_check(root: &Path) -> Option<String> {
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["diff", "--check"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+        .ok()?;
+
+    if output.stdout.is_empty() {
+        None
+    } else {
+        Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    }
+}
+
+/// Relative paths of files modified, added, or untracked in the working tree.
+pub fn changed_files(root: &Path) -> Vec<String> {
+    let mut files = Vec::new();
+    if let Some(text) = status(root) {
+        for line in text.lines() {
+            if line.len() > 3 {
+                let path = line[3..].trim().to_string();
+                if !path.is_empty() {
+                    files.push(path);
+                }
+            }
+        }
+    }
+    files
+}

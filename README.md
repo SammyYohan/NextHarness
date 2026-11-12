@@ -98,11 +98,12 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-On Linux the build needs the GTK and XDo headers, because the pay prompt is a
-native dialog:
+On Linux the build needs no extra headers: the pay prompt is drawn by zenity or
+kdialog when one of them is installed; without either, NextHarness asks at the
+terminal or waits — it never spends by itself:
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # optional: gives the pay prompt a graphical window
 ```
 
 ### Quick start
@@ -242,17 +243,19 @@ and drives no window.
 ### Honest limits
 
 - **This beta has been exercised on Windows.** The Linux and macOS code paths
-  (login-shell `PATH`, `.desktop` and `/Applications` scanning, GTK fallback)
+  (login-shell `PATH`, `.desktop` and `/Applications` scanning, dialog fallback)
   are written and reviewed but not yet run by the author; that is why several
   entries say `unverified`.
 - **Windows process-tree killing uses `taskkill /T /F`**, not a job object: the
-  dependency list for this version does not include a Windows API crate.
+  dependency list for this version does not include a Windows API crate. On Unix
+  the whole process group is killed, which reaches the grandchildren.
 - **Times are shown in UTC.** Reset times printed by a harness in local time are
   read as UTC, so a pause can be a few hours too long or too short. It is
   recomputed on the next real attempt.
-- **Detection is cached for 10 minutes** so `status` and `init` stay instant.
-  `next-harness doctor --refresh` ignores the cache; installing a harness and running
-  `next-harness run` immediately may need that refresh.
+- **Detection is cached for 10 minutes** so `run` and `doctor` stay instant.
+  `next-harness init` always re-detects, and `next-harness doctor --refresh` ignores
+  the cache; installing a harness and running `next-harness run` immediately may
+  need that refresh.
 - **The catalogue is a snapshot.** Harnesses rename flags and binaries; when a
   probe fails the entry shows `not installed` rather than guessing.
 - **WSL is detected, never driven.**
@@ -371,11 +374,13 @@ les [Releases](https://github.com/SammyYohan/NextHarness/releases), vérifiez le
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-Sous Linux, la compilation demande les en-têtes GTK et XDo (la question « payer »
-est une boîte de dialogue native) :
+Sous Linux, la compilation ne demande aucun en-tête supplémentaire : la question
+« payer » est affichée par zenity ou kdialog quand l'un des deux est installé ;
+sans eux, NextHarness demande dans le terminal ou attend — il ne paie jamais tout
+seul :
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # facultatif : donne une fenêtre graphique à la question « payer »
 ```
 
 ### Démarrage rapide
@@ -492,18 +497,20 @@ application de bureau et ne pilote aucune fenêtre.
 ### Limites assumées
 
 - **Cette bêta a été exercée sous Windows.** Les chemins Linux et macOS (`PATH`
-  du shell de connexion, analyse `.desktop` et `/Applications`, repli GTK) sont
+  du shell de connexion, analyse `.desktop` et `/Applications`, repli de dialogue) sont
   écrits et relus, mais pas encore exécutés par l'auteur : c'est pourquoi
   plusieurs entrées affichent `unverified`.
 - **Sous Windows, l'arbre de processus est tué par `taskkill /T /F`**, pas par
   un job object : la liste de dépendances de cette version n'inclut pas de crate
-  d'API Windows.
+  d'API Windows. Sous Unix, tout le groupe de processus est tué, ce qui atteint
+  aussi les petits-enfants.
 - **Les heures sont affichées en UTC.** Une heure de reset annoncée en heure
   locale est lue comme UTC : la pause peut être trop longue ou trop courte de
   quelques heures. Elle est recalculée à la tentative réelle suivante.
-- **La détection est mise en cache 10 minutes** pour que `status` et `init`
-  restent instantanés. `next-harness doctor --refresh` ignore le cache ; installer un
-  harnais puis lancer `next-harness run` aussitôt peut nécessiter ce refresh.
+- **La détection est mise en cache 10 minutes** pour que `run` et `doctor`
+  restent instantanés. `next-harness init` redétecte toujours, et
+  `next-harness doctor --refresh` ignore le cache ; installer un harnais puis lancer
+  `next-harness run` aussitôt peut nécessiter ce refresh.
 - **Le catalogue est un instantané.** Les harnais renomment options et binaires ;
   quand la sonde échoue, l'entrée indique `non installé` au lieu de deviner.
 - **WSL est détecté, jamais piloté.**
@@ -623,11 +630,12 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-En Linux la compilación necesita los encabezados GTK y XDo, porque el aviso de pago es un
-diálogo nativo:
+En Linux la compilación no necesita encabezados adicionales: el aviso de pago se
+dibuja con zenity o kdialog cuando uno de los dos está instalado; sin ninguno,
+NextHarness pregunta en la terminal o espera — nunca paga por su cuenta:
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # opcional: da al aviso de pago una ventana gráfica
 ```
 
 ### Inicio rápido
@@ -738,17 +746,18 @@ y no maneja ninguna ventana.
 ### Límites honestos
 
 - **Esta beta se ha probado en Windows.** Las rutas de código de Linux y macOS
-  (`PATH` del shell de inicio, escaneo de `.desktop` y `/Applications`, respaldo GTK)
+  (`PATH` del shell de inicio, escaneo de `.desktop` y `/Applications`, respaldo de diálogo)
   están escritas y revisadas pero aún no ejecutadas por el autor; por eso varias
   entradas dicen `unverified`.
 - **En Windows, el árbol de procesos se mata con `taskkill /T /F`**, no con un objeto de trabajo: la
-  lista de dependencias de esta versión no incluye un crate de API de Windows.
+  lista de dependencias de esta versión no incluye un crate de API de Windows. En Unix se mata
+  todo el grupo de procesos, lo que alcanza también a los nietos.
 - **Los tiempos se muestran en UTC.** Los tiempos de reinicio impresos por un harness en hora local se
   leen como UTC, por lo que una pausa puede ser unas pocas horas demasiado larga o corta. Se
   recalcula en el siguiente intento real.
-- **La detección está en caché por 10 minutos** para que `status` y `init` se mantengan instantáneos.
-  `next-harness doctor --refresh` ignora la caché; instalar un harness y ejecutar
-  `next-harness run` inmediatamente puede necesitar ese refresco.
+- **La detección está en caché por 10 minutos** para que `run` y `doctor` se mantengan instantáneos.
+  `next-harness init` siempre vuelve a detectar, y `next-harness doctor --refresh` ignora la caché;
+  instalar un harness y ejecutar `next-harness run` inmediatamente puede necesitar ese refresco.
 - **El catálogo es una instantánea.** Los harnesses renombran banderas y binarios; cuando una
   sonda falla, la entrada muestra `no instalado` en lugar de adivinar.
 - **WSL se detecta, nunca se maneja.**
@@ -867,11 +876,12 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-Unter Linux werden die GTK- und XDo-Header benötigt, weil die Zahlungsaufforderung ein
-nativer Dialog ist:
+Unter Linux werden für die Kompilierung keine zusätzlichen Header benötigt: Die
+Zahlungsaufforderung zeichnen zenity oder kdialog, wenn eines von beiden installiert
+ist; ohne beide fragt NextHarness im Terminal oder wartet — es zahlt nie von selbst:
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # optional: verleiht der Zahlungsaufforderung ein grafisches Fenster
 ```
 
 ### Schnellstart
@@ -983,17 +993,19 @@ und steuert kein Fenster.
 ### Ehrliche Grenzen
 
 - **Diese Beta wurde unter Windows erprobt.** Die Linux- und macOS-Codepfade
-  (Login-Shell-`PATH`, `.desktop`- und `/Applications`-Scannen, GTK-Fallback)
+  (Login-Shell-`PATH`, `.desktop`- und `/Applications`-Scannen, Dialog-Fallback)
   sind geschrieben und überprüft, aber noch nicht vom Autor ausgeführt; daher sind mehrere
   Einträge als `unverified` gekennzeichnet.
 - **Unter Windows wird der Prozessbaum mit `taskkill /T /F` beendet**, nicht mit einem Job-Objekt: die
-  Abhängigkeitsliste dieser Version enthält kein Windows-API-Crate.
+  Abhängigkeitsliste dieser Version enthält kein Windows-API-Crate. Unter Unix wird die ganze
+  Prozessgruppe beendet, was auch die Enkelprozesse erreicht.
 - **Zeiten werden in UTC angezeigt.** Zurücksetzungszeiten, die ein Harness in Ortszeit ausgibt, werden
   als UTC gelesen, sodass eine Pause ein paar Stunden zu lang oder zu kurz sein kann. Sie wird
   beim nächsten echten Versuch neu berechnet.
-- **Die Erkennung ist 10 Minuten gecacht**, damit `status` und `init` sofort reagieren.
-  `next-harness doctor --refresh` ignoriert den Cache; die Installation eines Harnesses und das sofortige
-  Ausführen von `next-harness run` kann diesen Refresh benötigen.
+- **Die Erkennung ist 10 Minuten gecacht**, damit `run` und `doctor` sofort reagieren.
+  `next-harness init` erkennt immer neu, und `next-harness doctor --refresh` ignoriert den Cache;
+  die Installation eines Harnesses und das sofortige Ausführen von `next-harness run` kann diesen
+  Refresh benötigen.
 - **Der Katalog ist ein Snapshot.** Harnesses benennen Flags und Binärdateien um; wenn eine
   Prüfung fehlschlägt, zeigt der Eintrag `nicht installiert` anstatt zu raten.
 - **WSL wird erkannt, nie gesteuert.**
@@ -1112,11 +1124,12 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-Su Linux la compilazione richiede le intestazioni GTK e XDo, perché il prompt di pagamento è una
-finestra di dialogo nativa:
+Su Linux la compilazione non richiede intestazioni aggiuntive: il prompt di pagamento
+viene disegnato da zenity o kdialog quando uno dei due è installato; senza nessuno
+dei due, NextHarness chiede nel terminale o attende — non spende mai da solo:
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # opzionale: dà al prompt di pagamento una finestra grafica
 ```
 
 ### Avvio rapido
@@ -1227,17 +1240,19 @@ desktop e non guida alcuna finestra.
 ### Limiti onesti
 
 - **Questa beta è stata esercitata su Windows.** I percorsi di codice Linux e macOS
-  (`PATH` della shell di login, scansione `.desktop` e `/Applications`, fallback GTK)
+  (`PATH` della shell di login, scansione `.desktop` e `/Applications`, fallback di dialogo)
   sono scritti e revisionati ma non ancora eseguiti dall'autore; per questo diverse
   voci dicono `unverified`.
 - **Su Windows l'albero dei processi viene ucciso con `taskkill /T /F`**, non con un job object: la
-  lista delle dipendenze di questa versione non include una crate API di Windows.
+  lista delle dipendenze di questa versione non include una crate API di Windows. Su Unix viene
+  ucciso l'intero gruppo di processi, che raggiunge anche i nipoti.
 - **I tempi sono mostrati in UTC.** I tempi di reset stampati da un harness in orario locale vengono
   letti come UTC, quindi una pausa può essere alcune ore troppo lunga o troppo breve. Viene
   ricalcolata al prossimo tentativo reale.
-- **La rilevazione è memorizzata nella cache per 10 minuti** affinché `status` e `init` rimangano
-  istantanei. `next-harness doctor --refresh` ignora la cache; installare un harness ed eseguire
-  `next-harness run` immediatamente potrebbe aver bisogno di quel refresh.
+- **La rilevazione è memorizzata nella cache per 10 minuti** affinché `run` e `doctor` rimangano
+  istantanei. `next-harness init` rileva sempre da capo, e `next-harness doctor --refresh` ignora la
+  cache; installare un harness ed eseguire `next-harness run` immediatamente potrebbe aver bisogno
+  di quel refresh.
 - **Il catalogo è uno snapshot.** Gli harness rinominano flag e binari; quando una
   sonda fallisce la voce mostra `non installato` invece di indovinare.
 - **WSL è rilevato, mai guidato.**
@@ -1356,11 +1371,12 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-No Linux a compilação precisa dos cabeçalhos GTK e XDo, porque o aviso de pagamento é um
-diálogo nativo:
+No Linux a compilação não precisa de cabeçalhos adicionais: o aviso de pagamento é
+desenhado pelo zenity ou pelo kdialog quando um deles está instalado; sem nenhum dos
+dois, o NextHarness pergunta no terminal ou espera — nunca paga por conta própria:
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # opcional: dá ao aviso de pagamento uma janela gráfica
 ```
 
 ### Início rápido
@@ -1471,17 +1487,18 @@ e não controla nenhuma janela.
 ### Limites honestos
 
 - **Esta beta foi exercida no Windows.** Os caminhos de código do Linux e macOS
-  (`PATH` do shell de login, varredura de `.desktop` e `/Applications`, fallback GTK)
+  (`PATH` do shell de login, varredura de `.desktop` e `/Applications`, fallback de diálogo)
   estão escritos e revisados, mas ainda não executados pelo autor; por isso várias
   entradas dizem `unverified`.
 - **No Windows, a árvore de processos é morta com `taskkill /T /F`**, não com um job object: a
-  lista de dependências desta versão não inclui um crate de API do Windows.
+  lista de dependências desta versão não inclui um crate de API do Windows. No Unix, todo o grupo
+  de processos é morto, o que alcança também os netos.
 - **Os horários são mostrados em UTC.** Horários de reinício impressos por um harness em horário local são
   lidos como UTC, então uma pausa pode ser algumas horas muito longa ou curta. É
   recalculada na próxima tentativa real.
-- **A detecção é armazenada em cache por 10 minutos** para que `status` e `init` permaneçam instantâneos.
-  `next-harness doctor --refresh` ignora o cache; instalar um harness e executar
-  `next-harness run` imediatamente pode precisar desse refresh.
+- **A detecção é armazenada em cache por 10 minutos** para que `run` e `doctor` permaneçam instantâneos.
+  `next-harness init` sempre detecta de novo, e `next-harness doctor --refresh` ignora o cache;
+  instalar um harness e executar `next-harness run` imediatamente pode precisar desse refresh.
 - **O catálogo é um snapshot.** Os harnesses renomeiam flags e binários; quando uma
   sonda falha, a entrada mostra `não instalado` em vez de adivinhar.
 - **WSL é detectado, nunca controlado.**
@@ -1588,10 +1605,10 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-在 Linux 上，编译需要 GTK 和 XDo 头文件，因为付费提示是原生对话框：
+在 Linux 上，编译不需要额外的头文件：付费提示由 zenity 或 kdialog 绘制（安装了其中之一时）；两者都没有时，NextHarness 在终端询问或等待——它从不自行付费：
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # 可选：为付费提示提供图形窗口
 ```
 
 ### 快速入门
@@ -1683,10 +1700,10 @@ NextHarness 已翻译成：
 
 ### 诚实的限制
 
-- **此版本已在 Windows 上验证。** Linux 和 macOS 代码路径（登录 shell `PATH`、`.desktop` 和 `/Applications` 扫描、GTK 回退）已编写和评审，但尚未由作者运行；因此多个条目标记为 `unverified`。
-- **Windows 上进程树终止使用 `taskkill /T /F`**，而非作业对象：此版本的依赖列表不包括 Windows API crate。
+- **此版本已在 Windows 上验证。** Linux 和 macOS 代码路径（登录 shell `PATH`、`.desktop` 和 `/Applications` 扫描、对话框回退）已编写和评审，但尚未由作者运行；因此多个条目标记为 `unverified`。
+- **Windows 上进程树终止使用 `taskkill /T /F`**，而非作业对象：此版本的依赖列表不包括 Windows API crate。在 Unix 上则终止整个进程组，从而覆盖到孙进程。
 - **时间显示为 UTC。** harness 在本地时间中打印的重置时间被读作 UTC，因此暂停可能比实际长或短几小时。它会在下一次真实尝试时重新计算。
-- **检测缓存 10 分钟**，以便 `status` 和 `init` 保持即时。`next-harness doctor --refresh` 忽略缓存；安装一个 harness 后立即运行 `next-harness run` 可能需要该刷新。
+- **检测缓存 10 分钟**，以便 `run` 和 `doctor` 保持即时。`next-harness init` 总是重新检测，`next-harness doctor --refresh` 忽略缓存；安装一个 harness 后立即运行 `next-harness run` 可能需要该刷新。
 - **目录是快照。** harness 会重命名标志和二进制文件；当探测失败时，条目显示 `未安装` 而非猜测。
 - **WSL 被检测，从不驱动。**
 - **没有输出的代理在 120 s 沉默后停止**（加上目录中的 `startup_grace_s`），以及总共 30 分钟后。停止的运行报告为 *阻塞*，从不报告为 *额度耗尽*。
@@ -1788,10 +1805,10 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 cargo install --git https://github.com/SammyYohan/NextHarness --bin next-harness
 ```
 
-Linux では、ビルドに GTK と XDo のヘッダーが必要です。これは支払いプロンプトがネイティブダイアログであるためです：
+Linux では、ビルドに追加のヘッダーは不要です。支払いプロンプトは zenity または kdialog がインストールされていればそれらが描画します。どちらもなければ、NextHarness はターミナルで尋ねるか待機します — 自分では決して支払いません：
 
 ```sh
-sudo apt-get install libgtk-3-dev libxdo-dev
+sudo apt-get install zenity   # 任意：支払いプロンプトにグラフィックウィンドウを与える
 ```
 
 ### クイックスタート
@@ -1882,10 +1899,10 @@ NextHarness は以下の言語に翻訳されています:
 
 ### 正直な制限
 
-- **このベータ版は Windows で検証済みです。** Linux と macOS のコードパス（ログインシェルの `PATH`、`.desktop` と `/Applications` のスキャン、GTK フォールバック）は作成・レビュー済みですが、作者によってまだ実行されていません。そのためいくつかのエントリは `unverified` と記載されています。
-- **Windows ではプロセスツリーの終了に `taskkill /T /F` を使用します。** ジョブオブジェクトではありません。このバージョンの依存関係リストには Windows API クレートは含まれていません。
+- **このベータ版は Windows で検証済みです。** Linux と macOS のコードパス（ログインシェルの `PATH`、`.desktop` と `/Applications` のスキャン、ダイアログのフォールバック）は作成・レビュー済みですが、作者によってまだ実行されていません。そのためいくつかのエントリは `unverified` と記載されています。
+- **Windows ではプロセスツリーの終了に `taskkill /T /F` を使用します。** ジョブオブジェクトではありません。このバージョンの依存関係リストには Windows API クレートは含まれていません。Unix ではプロセスグループ全体を終了するため、孫プロセスにも届きます。
 - **時刻は UTC で表示されます。** ハーネスがローカルタイムで出力するリセット時刻は UTC として読み取られるため、一時停止時間が数時間長すぎたり短すぎたりする可能性があります。次の実際の試行時に再計算されます。
-- **検出は 10 分間キャッシュされます。** `status` と `init` を即時に保つためです。`next-harness doctor --refresh` はキャッシュを無視します。ハーネスをインストールしてすぐに `next-harness run` を実行する場合、このリフレッシュが必要になることがあります。
+- **検出は 10 分間キャッシュされます。** `run` と `doctor` を即時に保つためです。`next-harness init` は常に再検出し、`next-harness doctor --refresh` はキャッシュを無視します。ハーネスをインストールしてすぐに `next-harness run` を実行する場合、このリフレッシュが必要になることがあります。
 - **カタログはスナップショットです。** ハーネスはフラグやバイナリ名を変更することがあります。プローブが失敗した場合、エントリは `インストールされていません` と表示され、推測は行われません。
 - **WSL は検出されますが、決して操作されません。**
 - **出力のないハーネスは 120 秒の沈黙後（カタログの `startup_grace_s` を加算）に停止され、合計 30 分後に停止されます。** 停止された実行は *ブロック* として報告され、決して *クォータ切れ* として報告されません。

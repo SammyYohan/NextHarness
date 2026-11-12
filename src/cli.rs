@@ -52,6 +52,9 @@ enum Command {
         /// Also prepare human-driven harnesses
         #[arg(long)]
         manual: bool,
+        /// Preferred order of harnesses to try (comma-separated IDs, e.g. "kilo,opencode,agy")
+        #[arg(long, short = 'o', value_name = "HARNESSES", alias = "chain")]
+        order: Option<String>,
     },
     /// Continue the task already recorded in .next-harness/TASK.md
     Resume {
@@ -61,6 +64,9 @@ enum Command {
         /// Also prepare human-driven harnesses
         #[arg(long)]
         manual: bool,
+        /// Preferred order of harnesses to try (comma-separated IDs, e.g. "kilo,opencode,agy")
+        #[arg(long, short = 'o', value_name = "HARNESSES", alias = "chain")]
+        order: Option<String>,
     },
     /// Show which harnesses are paused and until when
     Status,
@@ -109,11 +115,13 @@ fn dispatch(command: Command) -> Result<i32> {
             task,
             max_attempts,
             manual,
-        } => start(&paths, &config, &prefs, &root, &task, max_attempts, manual),
+            order,
+        } => start(&paths, &config, &prefs, &root, &task, max_attempts, manual, order),
         Command::Resume {
             max_attempts,
             manual,
-        } => resume(&paths, &config, &prefs, &root, max_attempts, manual),
+            order,
+        } => resume(&paths, &config, &prefs, &root, max_attempts, manual, order),
         Command::Status => status(&paths, &config),
         Command::Doctor { refresh, report } => check(&paths, &config, refresh, report),
         Command::Config => show_config(&paths, &config, &prefs),
@@ -137,8 +145,9 @@ fn init(paths: &Paths, config: &Config) -> Result<i32> {
     println!("{}", i18n::tr("cli.init.title"));
     println!("{}", i18n::tr("cli.init.detecting"));
 
+    let prefs = Preferences::load(&paths.config_file);
     let detections = detect(paths, config, true);
-    let usable: Vec<&Detection> = detections
+    let mut usable: Vec<&Detection> = detections
         .iter()
         .filter(|entry| entry.status.is_usable())
         .collect();
@@ -146,6 +155,16 @@ fn init(paths: &Paths, config: &Config) -> Result<i32> {
     if usable.is_empty() {
         println!("{}", i18n::tr("cli.init.none"));
         return Ok(1);
+    }
+
+    if !prefs.priority.is_empty() {
+        usable.sort_by_key(|entry| {
+            prefs
+                .priority
+                .iter()
+                .position(|p| p == &entry.id)
+                .unwrap_or(usize::MAX)
+        });
     }
 
     let order = usable
@@ -183,7 +202,6 @@ fn init(paths: &Paths, config: &Config) -> Result<i32> {
         println!("{}", i18n::tr("cli.init.not_repo"));
     }
 
-    let prefs = Preferences::load(&paths.config_file);
     prefs.save(&paths.config_file)?;
     println!(
         "{}",
@@ -195,6 +213,20 @@ fn init(paths: &Paths, config: &Config) -> Result<i32> {
     Ok(0)
 }
 
+fn parse_order(order: Option<&str>) -> Option<Vec<String>> {
+    let raw = order?;
+    let list: Vec<String> = raw
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+    if list.is_empty() {
+        None
+    } else {
+        Some(list)
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn start(
     paths: &Paths,
@@ -204,14 +236,24 @@ fn start(
     task: &str,
     max_attempts: Option<usize>,
     manual: bool,
+    order: Option<String>,
 ) -> Result<i32> {
     if !git::is_repo(root) {
         println!("{}", i18n::tr("cli.run.not_repo"));
     }
 
+    // A fresh task invalidates the previous handoff: the first harness must be
+    // pointed at TASK.md, not at a document that describes an older task.
+    if paths.handoff_file.is_file() {
+        std::fs::remove_file(&paths.handoff_file)
+            .map_err(|e| crate::error::io(&paths.handoff_file, e))?;
+    }
+
     let settings = Settings {
         max_attempts: max_attempts.unwrap_or(prefs.max_attempts),
         manual: manual || prefs.manual,
+        order: parse_order(order.as_deref()),
+        priority: prefs.priority.clone(),
     };
     run_task(paths, config, root, task, settings)
 }
@@ -223,6 +265,7 @@ fn resume(
     root: &std::path::Path,
     max_attempts: Option<usize>,
     manual: bool,
+    order: Option<String>,
 ) -> Result<i32> {
     if !paths.task_file.is_file() {
         println!("{}", i18n::tr("handoff.missing"));
@@ -236,6 +279,8 @@ fn resume(
     let settings = Settings {
         max_attempts: max_attempts.unwrap_or(prefs.max_attempts),
         manual: manual || prefs.manual,
+        order: parse_order(order.as_deref()),
+        priority: prefs.priority.clone(),
     };
     run_task(paths, config, root, &task, settings)
 }
@@ -361,5 +406,14 @@ fn show_config(paths: &Paths, config: &Config, prefs: &Preferences) -> Result<i3
             ],
         )
     );
+    if !prefs.priority.is_empty() {
+        println!(
+            "{}",
+            i18n::tr_args(
+                "cli.config.priority",
+                &[("order", prefs.priority.join(", "))]
+            )
+        );
+    }
     Ok(0)
 }

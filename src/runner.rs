@@ -12,6 +12,7 @@
 
 use std::io::Read;
 use std::path::Path;
+#[cfg(windows)]
 use std::process::{Command, Stdio};
 use std::sync::mpsc::{self, RecvTimeoutError};
 use std::time::{Duration, Instant};
@@ -266,22 +267,47 @@ fn answer_cursor_query<W: std::io::Write>(writer: &mut W, chunk: &[u8], pending:
     *pending = window[window.len().saturating_sub(keep)..].to_vec();
 }
 
-/// Kill the child and, on Windows, its whole tree: an agent left running after a
-/// timeout would keep spending quota.
+/// Kill the child and, when the platform allows it, its whole tree: an agent
+/// left running after a timeout would keep spending quota.
 fn terminate(child: &mut Box<dyn portable_pty::Child + Send + Sync>) {
     let pid = child.process_id();
-    let _ = child.kill();
 
     #[cfg(windows)]
-    if let Some(pid) = pid {
-        let _ = Command::new("taskkill")
-            .args(["/PID", &pid.to_string(), "/T", "/F"])
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status();
+    {
+        let _ = child.kill();
+        if let Some(pid) = pid {
+            let _ = Command::new("taskkill")
+                .args(["/PID", &pid.to_string(), "/T", "/F"])
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status();
+        }
     }
 
-    #[cfg(not(windows))]
-    let _ = pid;
+    // The child is a session leader (portable-pty calls setsid), so its own pid
+    // is also the identifier of the process group the whole agent tree lives
+    // in. A signal to -pid reaches the grandchildren that a plain kill would
+    // orphan.
+    #[cfg(unix)]
+    {
+        let _ = child.kill();
+        if let Some(pid) = pid {
+            let _ = kill_group(pid);
+        }
+    }
+}
+
+/// `SIGKILL` to the process group the child led.
+#[cfg(unix)]
+fn kill_group(pid: u32) -> std::io::Result<()> {
+    // SAFETY: `kill` takes a pid and a signal, has no precondition beyond a
+    // valid pid, and reports its own errors: a stale group id is an error
+    // return, not a crash.
+    let sent = unsafe { libc::kill(-(pid as i32), libc::SIGKILL) };
+    if sent == 0 {
+        Ok(())
+    } else {
+        Err(std::io::Error::last_os_error())
+    }
 }
