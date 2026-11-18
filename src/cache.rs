@@ -1,9 +1,9 @@
-//! A short-lived cache of the last detection, so `status`, `init` and `run` do
-//! not re-probe every binary each time.
+//! A short-lived cache of the last detection, so repeated `run` and `doctor`
+//! calls do not re-probe every binary each time.
 //!
-//! It expires on its own and `next-harness doctor --refresh` ignores it entirely: a
-//! cache that outlives an installation would hide the harness the user just
-//! installed.
+//! It expires on its own; `next-harness init` and `next-harness doctor --refresh`
+//! ignore it entirely. A cache that outlives an installation would hide the
+//! harness the user just installed.
 
 use std::path::Path;
 

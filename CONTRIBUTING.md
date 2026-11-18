@@ -65,6 +65,11 @@ quota_ignores_exit_code = false
 - `mode = "interactive"` means a human drives it: NextHarness prepares the prompt and
   never automates the interface.
 - `mode = "gui"` means it is only detected by name (`gui_keywords`).
+- `unattended_args` replaces `{unattended}` wherever it appears in `run` or
+  `run_resume`; an empty list removes the placeholder. Set
+  `unattended_required = true` only when the harness stalls on its first
+  permission prompt without those flags: NextHarness then skips it unless the
+  effective template actually receives them.
 - `default_tier = "unknown"` is treated as **paid**: the user is asked before it
   runs. Do not use `unknown` to mean "probably fine".
 

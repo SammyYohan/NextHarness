@@ -10,9 +10,9 @@ use std::path::Path;
 
 use crate::config::{Config, Harness, Mode};
 use crate::detector::{Detection, Status};
+use crate::diagnostic;
 use crate::error::Result;
 use crate::gatekeeper::{self, Answer, Question, Ui};
-use crate::diagnostic;
 use crate::git;
 use crate::handoff::{self, Checkpoint, Handoff};
 use crate::i18n;
@@ -164,7 +164,7 @@ pub fn run(session: &Session, state: &mut State) -> Result<Report> {
             continue;
         };
 
-        if !candidate(harness, detection, state, session.settings.manual) {
+        if !candidate(harness, detection, state, session.settings.manual, resuming) {
             continue;
         }
 
@@ -395,8 +395,34 @@ fn record(paths: &Paths, harness: &Harness, outcome: &runner::Outcome) {
     let _ = std::fs::write(file, format!("{header}{tail}\n"));
 }
 
+/// The run template this attempt would use.
+fn effective_template(harness: &Harness, resuming: bool) -> &[String] {
+    if resuming && !harness.run_resume.is_empty() {
+        &harness.run_resume
+    } else {
+        &harness.run
+    }
+}
+
+/// Whether the args this harness needs to run without permission prompts would
+/// actually be inserted. A required harness started without them would stall on
+/// its first prompt and burn the whole inactivity budget for nothing.
+fn unattended_ready(harness: &Harness, resuming: bool) -> bool {
+    !harness.unattended_required
+        || (!harness.unattended_args.is_empty()
+            && effective_template(harness, resuming)
+                .iter()
+                .any(|token| token == "{unattended}"))
+}
+
 /// Whether a harness may be considered at all.
-fn candidate(harness: &Harness, detection: &Detection, state: &State, manual: bool) -> bool {
+fn candidate(
+    harness: &Harness,
+    detection: &Detection,
+    state: &State,
+    manual: bool,
+    resuming: bool,
+) -> bool {
     if harness.mode == Mode::Gui {
         return false;
     }
@@ -409,17 +435,16 @@ fn candidate(harness: &Harness, detection: &Detection, state: &State, manual: bo
     if harness.mode == Mode::Interactive && !manual {
         return false;
     }
+    if harness.mode == Mode::Headless && !unattended_ready(harness, resuming) {
+        return false;
+    }
     !state.is_paused(&harness.id, now_epoch())
 }
 
 /// Expand a run template: `{prompt}` becomes the fixed sentence, `{unattended}`
 /// expands only for harnesses that declare unattended arguments.
 fn build_args(harness: &Harness, resuming: bool, prompt: &str) -> Vec<String> {
-    let template = if resuming && !harness.run_resume.is_empty() {
-        &harness.run_resume
-    } else {
-        &harness.run
-    };
+    let template = effective_template(harness, resuming);
 
     let mut args = Vec::with_capacity(template.len());
     for token in template {

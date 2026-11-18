@@ -194,3 +194,52 @@ run = ["{prompt}"]
         config.warnings
     );
 }
+
+#[test]
+fn a_required_harness_without_its_flags_is_reported_as_skipped() {
+    let config = Config::parse(
+        r#"
+schema = 1
+
+[detection_generic]
+quota = ["quota"]
+
+[[harness]]
+id = "empty"
+name = "Empty"
+mode = "headless"
+binaries = ["x"]
+run = ["{prompt}"]
+unattended_required = true
+
+[[harness]]
+id = "unused"
+name = "Unused"
+mode = "headless"
+binaries = ["x"]
+run = ["{prompt}"]
+unattended_args = ["--yes"]
+unattended_required = true
+"#,
+        None,
+        "test",
+    )
+    .expect("loads");
+
+    assert!(
+        config
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("empty") && warning.contains("always be skipped")),
+        "{:?}",
+        config.warnings
+    );
+    assert!(
+        config
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("unused") && warning.contains("new tasks")),
+        "{:?}",
+        config.warnings
+    );
+}

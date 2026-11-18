@@ -179,7 +179,7 @@ pub fn has_unclosed_delimiters(code: &str) -> bool {
             '}' if stack.pop() != Some('{') => return true,
             ')' if stack.pop() != Some('(') => return true,
             ']' if stack.pop() != Some('[') => return true,
-            '}' | ')' | ']' => {}  // matched correctly, continue
+            '}' | ')' | ']' => {} // matched correctly, continue
             _ => {}
         }
         i += 1;

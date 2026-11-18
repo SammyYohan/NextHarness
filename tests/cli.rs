@@ -262,8 +262,19 @@ fn order_flag_changes_execution_order() {
     let output = next_harness_with_catalog(
         &dir,
         &path,
-        &["run", "quick test", "--order", "second", "--max-attempts", "1"],
+        &[
+            "run",
+            "quick test",
+            "--order",
+            "second",
+            "--max-attempts",
+            "1",
+        ],
     );
     assert!(output.status.success(), "{}", text(&output));
-    assert!(text(&output).contains("Second finished the task"), "{}", text(&output));
+    assert!(
+        text(&output).contains("Second finished the task"),
+        "{}",
+        text(&output)
+    );
 }

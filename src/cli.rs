@@ -116,7 +116,16 @@ fn dispatch(command: Command) -> Result<i32> {
             max_attempts,
             manual,
             order,
-        } => start(&paths, &config, &prefs, &root, &task, max_attempts, manual, order),
+        } => start(
+            &paths,
+            &config,
+            &prefs,
+            &root,
+            &task,
+            max_attempts,
+            manual,
+            order,
+        ),
         Command::Resume {
             max_attempts,
             manual,

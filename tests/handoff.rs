@@ -398,9 +398,62 @@ fn checklist_is_created_and_passed_in_handoff() {
 
     assert_eq!(report.conclusion, Conclusion::Finished);
     let handoff = house.handoff();
-    assert!(handoff.contains("implement user profile feature"), "{handoff}");
+    assert!(
+        handoff.contains("implement user profile feature"),
+        "{handoff}"
+    );
     assert!(handoff.contains("- [ ]"), "{handoff}");
     assert!(house.paths().checklist_file.is_file());
+}
+
+#[test]
+fn a_harness_that_needs_unattended_flags_is_skipped_without_them() {
+    let house = House::new("handoff-unattended-skip");
+    let config = catalog(&format!(
+        "[[harness]]\nid = \"stalls\"\nname = \"Stalls\"\nmode = \"headless\"\n\
+         binaries = [\"fake-harness\"]\nrun = [\"success\", \"{{prompt}}\"]\n\
+         unattended_required = true\ndefault_tier = \"free\"\n\n{}",
+        entry(
+            "second",
+            "Second",
+            "headless",
+            "\"success\", \"{prompt}\"",
+            "free"
+        ),
+    ));
+
+    let mut state = State::default();
+    let report = house.run_task(
+        &config,
+        "do something unattended",
+        &mut state,
+        Settings::default(),
+    );
+
+    assert_eq!(report.conclusion, Conclusion::Finished);
+    assert_eq!(report.winner(), Some("second"));
+    assert_eq!(
+        report.attempts.len(),
+        1,
+        "the harness that would stall on a permission prompt must be skipped"
+    );
+}
+
+#[test]
+fn unattended_args_are_expanded_where_the_template_asks_for_them() {
+    let house = House::new("handoff-unattended-args");
+    let config = catalog(
+        "[[harness]]\nid = \"auto\"\nname = \"Auto\"\nmode = \"headless\"\n\
+         binaries = [\"fake-harness\"]\nrun = [\"{unattended}\", \"{prompt}\"]\n\
+         unattended_args = [\"success\"]\nunattended_required = true\n\
+         default_tier = \"free\"\n",
+    );
+
+    let mut state = State::default();
+    let report = house.run_task(&config, "do something", &mut state, Settings::default());
+
+    assert_eq!(report.conclusion, Conclusion::Finished);
+    assert_eq!(report.winner(), Some("auto"));
 }
 
 #[test]
@@ -431,12 +484,7 @@ fn configured_order_overrides_catalog_order() {
         order: Some(vec!["second".to_string()]),
         priority: Vec::new(),
     };
-    let report = house.run_task(
-        &config,
-        "build feature",
-        &mut state,
-        settings,
-    );
+    let report = house.run_task(&config, "build feature", &mut state, settings);
 
     assert_eq!(report.conclusion, Conclusion::Finished);
     assert_eq!(

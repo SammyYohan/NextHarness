@@ -93,7 +93,8 @@ mod tests {
 
     #[test]
     fn priority_can_be_read_from_json() {
-        let prefs: Preferences = serde_json::from_str(r#"{ "priority": ["kilo", "opencode", "agy"] }"#).expect("parse");
+        let prefs: Preferences =
+            serde_json::from_str(r#"{ "priority": ["kilo", "opencode", "agy"] }"#).expect("parse");
         assert_eq!(prefs.priority, vec!["kilo", "opencode", "agy"]);
     }
 }

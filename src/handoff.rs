@@ -111,14 +111,21 @@ pub fn write(paths: &Paths, root: &Path, doc: &Handoff) -> Result<()> {
         if let Ok(chk) = fs::read_to_string(&paths.checklist_file) {
             let chk = chk.trim();
             if !chk.is_empty() {
-                body.push_str(&format!("## {}\n\n{}\n\n", i18n::tr("handoff.checklist"), chk));
+                body.push_str(&format!(
+                    "## {}\n\n{}\n\n",
+                    i18n::tr("handoff.checklist"),
+                    chk
+                ));
             }
         }
     }
 
     // Git checkpoint
     if let Some(cp) = &doc.checkpoint {
-        let has_commits = cp.commits_created.as_ref().is_some_and(|c| !c.trim().is_empty());
+        let has_commits = cp
+            .commits_created
+            .as_ref()
+            .is_some_and(|c| !c.trim().is_empty());
         if cp.base_commit.is_some() || has_commits {
             body.push_str(&format!("## {}\n\n", i18n::tr("handoff.checkpoint")));
             if let Some(base) = &cp.base_commit {
@@ -164,11 +171,16 @@ pub fn write(paths: &Paths, root: &Path, doc: &Handoff) -> Result<()> {
     if let Some(diag) = &doc.diagnostic {
         body.push_str(&format!("## {}\n\n", i18n::tr("handoff.diagnostic")));
         if diag.is_clean() {
-            body.push_str("- Status: clean (no conflict markers, valid syntax in modified files)\n\n");
+            body.push_str(
+                "- Status: clean (no conflict markers, valid syntax in modified files)\n\n",
+            );
         } else {
             body.push_str("⚠️ The previous harness was interrupted and left potential issues in modified files:\n");
             for issue in &diag.issues {
-                body.push_str(&format!("- `{}` ({}): {}\n", issue.file, issue.kind, issue.message));
+                body.push_str(&format!(
+                    "- `{}` ({}): {}\n",
+                    issue.file, issue.kind, issue.message
+                ));
             }
             body.push_str("\n> **Important**: Inspect and repair these interrupted files first before continuing.\n\n");
         }

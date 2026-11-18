@@ -17,7 +17,7 @@ pub struct Paths {
     pub state_file: PathBuf,
     /// Preferences written by `next-harness init`.
     pub config_file: PathBuf,
-    /// Last detection run, so `status` and `init` stay instant.
+    /// Last detection run, so repeated `run` and `doctor` calls stay instant.
     pub cache_file: PathBuf,
     /// `<repo>/.next-harness`.
     pub next_harness_dir: PathBuf,
@@ -27,8 +27,6 @@ pub struct Paths {
     pub checklist_file: PathBuf,
     /// The handoff document written before switching harnesses.
     pub handoff_file: PathBuf,
-    /// Summary an agent is asked to write when it finishes.
-    pub result_file: PathBuf,
     /// One directory per run.
     pub runs_dir: PathBuf,
 }
@@ -45,7 +43,6 @@ impl Paths {
             task_file: next_harness_dir.join("TASK.md"),
             checklist_file: next_harness_dir.join("CHECKLIST.md"),
             handoff_file: next_harness_dir.join("HANDOFF.md"),
-            result_file: next_harness_dir.join("RESULT.md"),
             runs_dir: next_harness_dir.join("runs"),
             config_dir,
             next_harness_dir,

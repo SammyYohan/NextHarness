@@ -20,7 +20,12 @@ INSTALL_BIN="$INSTALL_DIR/next-harness"
 TARGET=""
 
 # Directory holding this script, empty when the script arrives through a pipe.
+# In that case `$0` is just `sh`, so `dirname` would return the caller's working
+# directory: only trust it when the script file is really there.
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd)" || SCRIPT_DIR=""
+if [ ! -f "$SCRIPT_DIR/install.sh" ]; then
+    SCRIPT_DIR=""
+fi
 
 fetch() { # fetch <url> <file>
     if command -v curl >/dev/null 2>&1; then

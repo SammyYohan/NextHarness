@@ -11,10 +11,11 @@
 #     {prompt}     ALWAYS a short fixed sentence pointing to .next-harness/TASK.md or
 #                  .next-harness/HANDOFF.md (never user text: avoids quoting bugs, argument
 #                  length limits and the Windows .cmd-shim escaping restrictions).
-#     {unattended} replaced by `unattended_args` only if the user opted in for this
-#                  harness; removed otherwise.
+#     {unattended} replaced by `unattended_args` (the catalog's opt-in for
+#                  unattended flags); removed when that list is empty.
 # - `unattended_required = true` means the harness stalls on permission prompts
-#   without those args, so it is skipped (manual mode) unless the user opted in.
+#   without those args. NextHarness skips it unless the effective template
+#   contains {unattended} and `unattended_args` is non-empty.
 # - A user file in <config_dir>/profiles.d/*.toml overrides entries by `id`.
 
 schema = 1
@@ -142,7 +143,6 @@ binaries = ["agy"]
 version_args = ["--version"]
 run = ["-p", "{prompt}"]
 json_args = ["--output-format", "json"]
-needs_pty = true
 default_tier = "free"
 enabled_by_default = true
 verified = "third_party"

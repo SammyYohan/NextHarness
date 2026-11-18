@@ -147,9 +147,6 @@ pub struct Harness {
     /// Arguments that request JSON output, kept verbatim for a future version.
     #[serde(default)]
     pub json_args: Vec<String>,
-    /// The harness only produces output on a real pseudo-terminal.
-    #[serde(default)]
-    pub needs_pty: bool,
     /// Platforms this harness runs on (`linux`, `macos`, `windows`, `wsl`).
     #[serde(default)]
     pub platforms: Vec<String>,
@@ -168,13 +165,13 @@ pub struct Harness {
     /// Trust level of the entry.
     #[serde(default)]
     pub verified: Verified,
-    /// Where the entry comes from.
+    /// Where the entry comes from, kept as provenance for maintainers.
     #[serde(default)]
     pub source: Option<String>,
     /// How to install the binary.
     #[serde(default)]
     pub install_hint: Option<String>,
-    /// Free-form notes shown by `doctor`.
+    /// Free-form maintainer notes, kept in the catalog and never printed.
     #[serde(default)]
     pub notes: Option<String>,
     /// Case-insensitive keywords used to find a desktop application.
@@ -451,11 +448,28 @@ fn validate(catalog: &Catalog) -> Result<Vec<String>> {
                         harness.id
                     ));
                 }
-                if harness.unattended_required && harness.unattended_args.is_empty() {
-                    warnings.push(format!(
-                        "`{}`: unattended_required without unattended_args will always be skipped",
-                        harness.id
-                    ));
+                if harness.unattended_required {
+                    if harness.unattended_args.is_empty() {
+                        warnings.push(format!(
+                            "`{}`: unattended_required without unattended_args will always be skipped",
+                            harness.id
+                        ));
+                    } else {
+                        if !harness.run.iter().any(|arg| arg == "{unattended}") {
+                            warnings.push(format!(
+                                "`{}`: unattended_required but run has no {{unattended}} placeholder: skipped on new tasks",
+                                harness.id
+                            ));
+                        }
+                        if !harness.run_resume.is_empty()
+                            && !harness.run_resume.iter().any(|arg| arg == "{unattended}")
+                        {
+                            warnings.push(format!(
+                                "`{}`: unattended_required but run_resume has no {{unattended}} placeholder: skipped when resuming",
+                                harness.id
+                            ));
+                        }
+                    }
                 }
             }
             Mode::Gui => {
