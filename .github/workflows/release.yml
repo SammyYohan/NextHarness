@@ -17,13 +17,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      # Ubuntu 22.04 is deliberate: a binary built on ubuntu-latest requires
+      # GLIBC_2.39 and fails on Ubuntu 22.04, Debian 12 and RHEL 9. Building on
+      # 22.04 keeps the floor at GLIBC_2.35.
       matrix:
         include:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             archive: zip
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
+            os: ubuntu-22.04
             archive: tar.gz
           - target: x86_64-apple-darwin
             os: macos-latest

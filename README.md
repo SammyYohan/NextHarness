@@ -92,6 +92,9 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 [Releases](https://github.com/SammyYohan/NextHarness/releases), verify the
 `.sha256` next to it, and put `next-harness` on your `PATH`.
 
+The prebuilt Linux binary targets glibc 2.35+ (Ubuntu 22.04 or newer). On older
+distributions, use the source install below.
+
 **From source** — you need Rust 1.85 or newer:
 
 ```sh
@@ -368,6 +371,10 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 les [Releases](https://github.com/SammyYohan/NextHarness/releases), vérifiez le
 `.sha256` à côté, puis placez `next-harness` dans votre `PATH`.
 
+Le binaire Linux précompilé cible glibc 2.35+ (Ubuntu 22.04 ou plus récent). Sur
+les distributions plus anciennes, utilisez l'installation depuis les sources
+ci-dessous.
+
 **Depuis les sources** — Rust 1.85 minimum :
 
 ```sh
@@ -624,6 +631,10 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 [Releases](https://github.com/SammyYohan/NextHarness/releases), verifica el
 `.sha256` junto a él, y coloca `next-harness` en tu `PATH`.
 
+El binario Linux precompilado requiere glibc 2.35+ (Ubuntu 22.04 o posterior). En
+distribuciones más antiguas, usa la instalación desde el código fuente que
+aparece abajo.
+
 **Desde el código fuente** — necesitas Rust 1.85 o superior:
 
 ```sh
@@ -869,6 +880,10 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 **Vorgekompilierte Binärdatei** — laden Sie das Archiv für Ihre Plattform von
 [Releases](https://github.com/SammyYohan/NextHarness/releases) herunter, verifizieren Sie die
 `.sha256` daneben, und legen Sie `next-harness` auf Ihren `PATH`.
+
+Die vorkompilierte Linux-Binärdatei setzt glibc 2.35+ voraus (Ubuntu 22.04 oder
+neuer). Auf älteren Distributionen verwenden Sie bitte die Installation aus dem
+Quellcode weiter unten.
 
 **Aus dem Quellcode** — Sie benötigen Rust 1.85 oder neuer:
 
@@ -1118,6 +1133,9 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 [Releases](https://github.com/SammyYohan/NextHarness/releases), verifica il
 `.sha256` accanto e metti `next-harness` nel tuo `PATH`.
 
+Il binario Linux precompilato richiede glibc 2.35+ (Ubuntu 22.04 o successivo).
+Su distribuzioni più vecchie, usa l'installazione dai sorgenti qui sotto.
+
 **Da sorgente** — serve Rust 1.85 o più recente:
 
 ```sh
@@ -1365,6 +1383,9 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 [Releases](https://github.com/SammyYohan/NextHarness/releases), verifique o
 `.sha256` ao lado e coloque `next-harness` no seu `PATH`.
 
+O binário Linux pré-compilado exige glibc 2.35+ (Ubuntu 22.04 ou mais recente).
+Em distribuições mais antigas, use a instalação a partir do código-fonte abaixo.
+
 **A partir do código-fonte** — você precisa do Rust 1.85 ou superior:
 
 ```sh
@@ -1599,6 +1620,8 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 
 **预编译二进制文件** — 从 [Releases](https://github.com/SammyYohan/NextHarness/releases) 下载适用于你平台的存档，验证旁边的 `.sha256`，并将 `next-harness` 放入你的 `PATH`。
 
+预编译的 Linux 二进制文件需要 glibc 2.35+（Ubuntu 22.04 或更新版本）。在较旧的发行版上，请使用下方的源码安装方式。
+
 **从源代码编译** — 你需要 Rust 1.85 或更高版本：
 
 ```sh
@@ -1798,6 +1821,8 @@ curl -fsSL https://raw.githubusercontent.com/SammyYohan/NextHarness/main/install
 ```
 
 **事前ビルド済みバイナリ** — [Releases](https://github.com/SammyYohan/NextHarness/releases) からプラットフォーム用のアーカイブをダウンロードし、隣の `.sha256` を確認し、`next-harness` を `PATH` に配置してください。
+
+事前ビルド済みの Linux バイナリは glibc 2.35+（Ubuntu 22.04 以降）が必要です。古いディストリビューションでは、下記のソースからのインストールを使用してください。
 
 **ソースからビルド** — Rust 1.85 以降が必要です：
 

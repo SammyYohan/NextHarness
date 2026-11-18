@@ -135,6 +135,16 @@ else
     fi
 fi
 
+# A binary built for a newer glibc fails only at exec time. Check it before
+# installing, so the user gets the source-build path instead of a broken
+# command on their PATH.
+if ! "$BINARY" --version >/dev/null 2>&1; then
+    echo "next-harness installer: the downloaded binary cannot run on this system." >&2
+    echo "It may require a newer glibc. Build from source instead:" >&2
+    echo "  cargo install --git https://github.com/$REPO --bin next-harness" >&2
+    exit 1
+fi
+
 mkdir -p "$INSTALL_DIR"
 cp -f "$BINARY" "$INSTALL_BIN"
 chmod +x "$INSTALL_BIN"
