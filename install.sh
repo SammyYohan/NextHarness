@@ -84,12 +84,25 @@ else
     # `releases/latest` skips prereleases, and this project ships betas: ask the
     # API for the newest release (prereleases included) that carries both the
     # archive and its checksum, so both files come from the same release.
+    #
+    # GitHub pretty-prints its JSON (`"tag_name": "v..."`), so the patterns
+    # below tolerate spaces around the colon; a compact payload still matches.
     RELEASES="$(fetch_stdout "$API_RELEASES" 2>/dev/null || true)"
     if [ -n "$RELEASES" ]; then
-        TAGS="$(printf '%s\n' "$RELEASES" | grep -o '"tag_name":"[^"]*"' | cut -d'"' -f4)"
+        TAGS="$(printf '%s\n' "$RELEASES" \
+            | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' \
+            | sed -E 's/.*"([^"]*)"$/\1/')"
+        ASSETS="$(printf '%s\n' "$RELEASES" \
+            | grep -o '"browser_download_url"[[:space:]]*:[[:space:]]*"[^"]*"' \
+            | sed -E 's/.*"(https:[^"]*)"$/\1/')"
         for tag in $TAGS; do
-            A="$(printf '%s\n' "$RELEASES" | grep -o "\"browser_download_url\":\"[^\"]*/download/$tag/$ARCHIVE_NAME\"" | cut -d'"' -f4 | head -n 1)"
-            C="$(printf '%s\n' "$RELEASES" | grep -o "\"browser_download_url\":\"[^\"]*/download/$tag/$ARCHIVE_NAME.sha256\"" | cut -d'"' -f4 | head -n 1)"
+            A="$(printf '%s\n' "$ASSETS" \
+                | grep -F "/download/$tag/$ARCHIVE_NAME" \
+                | grep -vF '.sha256' \
+                | head -n 1)"
+            C="$(printf '%s\n' "$ASSETS" \
+                | grep -F "/download/$tag/$ARCHIVE_NAME.sha256" \
+                | head -n 1)"
             if [ -n "$A" ] && [ -n "$C" ]; then
                 ASSET_URL="$A"
                 CHECK_URL="$C"
